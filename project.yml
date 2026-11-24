@@ -9,7 +9,7 @@ targets:
     platform: iOS
     sources:
       - path: App
-      - path: Index.html
+      - path: index.html
         buildPhase: resources
     settings:
       base:
