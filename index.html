@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FocusTime - Bấm Giờ Học Thông Minh</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0b0b1a;--card:#171733;--card2:#1e1e42;--text:#fff;--muted:#a5a5c8;--line:rgba(255,255,255,.12);--accent:#7c5cff;--accent2:#ff7a59;--green:#22c55e;--red:#ef4444;--yellow:#facc15}
+[data-theme="light"]{--bg:#f4f2ff;--card:#ffffff;--card2:#eeeaff;--text:#171733;--muted:#6b6b8a;--line:#e5e0ff;--accent:#6d4aff;--accent2:#ff6b4a}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;transition:.25s}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:14px 14px 90px}
+header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.h-in{max-width:1080px;margin:0 auto;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:19px}
+.logo-b{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,#7c5cff,#ff7a59);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 20px rgba(124,92,255,.45)}
+.h-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.icon-btn{border:1px solid var(--line);background:var(--card);color:var(--text);padding:9px 11px;border-radius:999px;cursor:pointer;font-size:14px}
+.icon-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tabs{display:flex;gap:8px;margin:16px 0;background:var(--card);padding:6px;border-radius:999px;border:1px solid var(--line)}
+.tab{flex:1;border:0;background:transparent;color:var(--muted);padding:12px 8px;border-radius:999px;font-weight:800;cursor:pointer;font-size:15px}
+.tab.active{background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(124,92,255,.4)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.timer-box{text-align:center;padding:10px 4px}
+.ring{position:relative;width:260px;height:260px;margin:8px auto}
+.ring svg{transform:rotate(-90deg)}
+.ring-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.big{font-size:52px;font-weight:900;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.sub{color:var(--muted);font-size:14px;margin-top:4px}
+.badge{display:inline-flex;padding:5px 10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);font-size:12px;font-weight:800;color:var(--muted)}
+.badge.on{background:#1e3a2f;color:#4ade80;border-color:#14532d}
+.btn{border:0;padding:13px 18px;border-radius:999px;font-weight:800;cursor:pointer;font-size:15px}
+.btn-p{background:var(--accent);color:#fff}
+.btn-g{background:var(--card2);color:var(--text);border:1px solid var(--line)}
+.btn-o{background:var(--accent2);color:#fff}
+.btn:disabled{opacity:.45}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+input,select{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--text);padding:12px;border-radius:14px;font-size:16px;outline:none}
+input:focus{border-color:var(--accent)}
+label{font-size:13px;color:var(--muted);font-weight:700}
+.preset{padding:9px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card2);color:var(--text);cursor:pointer;font-weight:700}
+.preset.active{background:var(--accent);color:#fff}
+.lap-row{display:flex;justify-content:space-between;padding:11px 12px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.pkg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:720px){.pkg{grid-template-columns:1fr}}
+.pkg-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;cursor:pointer;text-align:left}
+.pkg-card:hover{border-color:var(--accent)}
+.pkg-card.sel{border:2px solid var(--accent);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 12%,var(--card)),var(--card))}
+.timeline{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.phase{display:flex;gap:10px;align-items:center;padding:11px 12px;border-radius:14px;background:var(--card2);border:1px solid var(--line)}
+.phase.done{opacity:.6}
+.phase.now{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--card))}
+.dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);flex-shrink:0}
+.sound-panel{position:fixed;right:14px;top:78px;z-index:60;width:min(380px,calc(100vw - 28px));background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.4);display:none}
+.sound-panel.open{display:block}
+.s-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.s-btn{border:1px solid var(--line);background:var(--card2);color:var(--text);padding:11px 10px;border-radius:16px;cursor:pointer;text-align:left}
+.s-btn.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--card))}
+.s-btn small{color:var(--muted);display:block;font-size:11px;margin-top:3px}
+input[type=range]{accent-color:var(--accent)}
+.kbd-bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:9px 10px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;font-size:12px;color:var(--muted);z-index:40}
+kbd{background:var(--card2);border:1px solid var(--line);border-bottom-width:2px;padding:2px 7px;border-radius:6px;color:var(--text);font-weight:800}
+#focusOverlay{position:fixed;inset:0;background:#0b0b1a;color:#fff;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:18px;text-align:center}
+#focusOverlay.open{display:flex}
+#focusOverlay .big{font-size:clamp(64px,18vw,150px)}
+body.landscape .wrap{max-width:1180px}
+body.landscape .land2{display:grid!important;grid-template-columns:1.2fr .8fr;gap:14px;align-items:start}
+body.landscape .ring{width:220px;height:220px}
+.hint{font-size:13px;color:var(--muted);line-height:1.6}
+.progress{height:10px;background:var(--card2);border-radius:999px;overflow:hidden}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s}
+</style>
+</head>
+<body>
+<header><div class="h-in">
+<div class="logo"><div class="logo-b">⏱</div><div>FocusTime<div style="font-size:11px;color:var(--muted);font-weight:600">Bấm Giờ Học Thông Minh</div></div></div>
+<div class="h-btns">
+<button class="icon-btn" id="soundBtn" title="Âm thanh">🔊 Âm thanh</button>
+<button class="icon-btn" id="rotateBtn" title="Xoay ngang">⟳ Xoay ngang</button>
+<button class="icon-btn" id="focusBtn" title="Focus Mode">⛶ Focus</button>
+<button class="icon-btn" id="themeBtn" title="Dark / Light">🌙</button>
+</div></div></header>
+
+<div class="wrap">
+<div class="tabs">
+<button class="tab active" data-tab="count">⏳ Hẹn giờ</button>
+<button class="tab" data-tab="stop">⏱ Bấm giờ</button>
+<button class="tab" data-tab="smart">🧠 Thông minh</button>
+</div>
+
+<!-- COUNTDOWN -->
+<section id="tab-count">
+<div class="grid2 land2">
+<div class="card timer-box">
+<span class="badge" id="countState">Sẵn sàng</span>
+<div class="ring"><svg width="260" height="260" viewBox="0 0 260 260"><circle cx="130" cy="130" r="112" stroke="var(--line)" stroke-width="12" fill="none"/><circle id="countCircle" cx="130" cy="130" r="112" stroke="#7c5cff" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="703" stroke-dashoffset="0"/></svg>
+<div class="ring-num"><div class="big" id="countDisplay">25:00</div><div class="sub" id="countPct">100% còn lại</div></div></div>
+<div class="row" style="margin-top:10px"><button class="btn btn-p" id="countStart">▶ Bắt đầu</button><button class="btn btn-g" id="countReset">↺ Đặt lại</button></div>
+<div style="margin-top:14px;text-align:left"><label><input type="checkbox" id="countLoop" style="width:auto"> Lặp lại khi hết giờ</label> &nbsp; <label><input type="checkbox" id="countSound" checked style="width:auto"> Âm thanh báo hết giờ</label></div>
+</div>
+<div class="card">
+<h3>Đặt thời gian</h3><p class="hint" style="margin:6px 0 14px">Nhập giờ / phút / giây hoặc chọn preset nhanh.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><div><label>Giờ</label><input id="inH" type="number" min="0" max="12" value="0"></div><div><label>Phút</label><input id="inM" type="number" min="0" max="59" value="25"></div><div><label>Giây</label><input id="inS" type="number" min="0" max="59" value="0"></div></div>
+<div class="row" style="justify-content:flex-start;margin-top:14px"><button class="preset active" data-min="5">5 phút</button><button class="preset" data-min="10">10 phút</button><button class="preset" data-min="15">15 phút</button><button class="preset" data-min="25">25 phút</button><button class="preset" data-min="45">45 phút</button><button class="preset" data-min="50">50 phút</button><button class="preset" data-min="60">60 phút</button></div>
+<h3 style="margin-top:18px">Lịch sử gần nhất</h3><div id="countHistory" class="hint" style="margin-top:8px">Chưa có lần hẹn giờ nào.</div>
+</div></div>
+</section>
+
+<!-- STOPWATCH -->
+<section id="tab-stop" style="display:none">
+<div class="grid2 land2">
+<div class="card timer-box"><span class="badge" id="stopState">Sẵn sàng</span><div class="big" style="font-size:58px;margin:18px 0" id="stopDisplay">00:00.00</div><div class="row"><button class="btn btn-p" id="stopStart">▶ Bắt đầu</button><button class="btn btn-g" id="stopLap">🏁 Lap (L)</button><button class="btn btn-g" id="stopReset">↺ Đặt lại</button></div><p class="hint" style="margin-top:12px">Space = Bắt đầu/Dừng • L = Lap • R = Đặt lại</p></div>
+<div class="card"><h3>Các vòng (Lap)</h3><p class="hint" id="lapStats" style="margin:8px 0">Chưa có vòng nào.</p><div id="lapList"></div><button class="btn btn-g" id="clearLaps" style="margin-top:12px">Xóa tất cả vòng</button></div>
+</div></section>
+
+<!-- SMART -->
+<section id="tab-smart" style="display:none">
+<div class="card" style="margin-bottom:14px"><h3>Chọn gói học & nghỉ</h3><p class="hint">Nghỉ có kế hoạch tốt hơn nghỉ theo cảm giác. Lý thuyết cần block dài, học thuộc cần chunk ngắn + tự kiểm tra, bài tập cần 40-50 phút tập trung sâu.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px"><input id="pkgSearch" placeholder="🔍 Tìm gói: lý thuyết, thuộc, bài tập..."><select id="pkgFilter"><option value="all">Tất cả gói</option><option value="lythuyet">Lý thuyết</option><option value="hocthuoc">Học thuộc</option><option value="baitap">Bài tập</option><option value="khoi">Khởi động</option><option value="sau">Chuyên sâu</option></select></div>
+<div class="pkg" id="pkgList" style="margin-top:14px"></div></div>
+
+<div class="card" id="smartRunner">
+<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><span class="badge" id="smartPhaseBadge">Chưa bắt đầu</span><h2 id="smartPkgName" style="margin:8px 0 4px">Hãy chọn 1 gói ở trên để bắt đầu</h2><p class="hint" id="smartPhaseHint">Chọn gói → Bắt đầu → App tự chuyển Học → Nghỉ → Nghỉ dài cho bạn.</p></div><div style="text-align:right"><div class="big" id="smartDisplay" style="font-size:44px">--:--</div><div class="sub" id="smartRound">Vòng 0 / 0</div></div></div>
+<div class="progress" style="margin:14px 0"><i id="smartProgress" style="width:0%"></i></div>
+<div class="row"><button class="btn btn-p" id="smartStart">▶ Bắt đầu gói</button><button class="btn btn-g" id="smartSkip">⏭ Bỏ qua phase (L)</button><button class="btn btn-g" id="smartReset">↺ Kết thúc</button><button class="btn btn-o" id="smartFocus">⛶ Focus Mode</button></div>
+<div class="timeline" id="smartTimeline"></div>
+<div id="smartDone" style="display:none;margin-top:14px;background:#123324;border:1px solid #14532d;padding:14px;border-radius:16px"><b>🎉 Xong gói rồi! Giỏi lắm!</b><p class="hint" id="smartDoneText" style="color:#d1fae5"></p></div>
+</div>
+
+<div class="card" style="margin-top:14px"><h3>Vì sao gói này hiệu quả?</h3><p class="hint" id="pkgWhy" style="margin-top:8px">Chọn 1 gói để xem lý do khoa học.</p><p class="hint" style="margin-top:8px"><b>Gợi ý ôn lại (Spaced Repetition):</b> 1 ngày - 3 ngày - 7 ngày - 14 ngày - 30 ngày. Đặc biệt quan trọng với gói Học thuộc.</p></div>
+</section>
+</div>
+
+<!-- SOUND PANEL -->
+<div class="sound-panel" id="soundPanel">
+<div style="display:flex;justify-content:space-between;align-items:center"><b>ÂM THANH TẬP TRUNG</b><span class="badge" id="soundStatus">Tắt</span></div>
+<div class="s-grid">
+<button class="s-btn sel" data-sound="off">🔇 Tắt<small>Không phát gì</small></button>
+<button class="s-btn" data-sound="white">〰️ Ồn trắng nhẹ<small>Êm, che tiếng ồn</small></button>
+<button class="s-btn" data-sound="rain">🌧️ Mưa rơi dịu<small>Như mưa ngoài cửa sổ</small></button>
+<button class="s-btn" data-sound="brown">🌊 Ồn nâu ấm<small>Trầm, ấm, dễ ngủ sâu</small></button>
+<button class="s-btn" data-sound="alpha">🧠 Sóng Alpha<small>Binaural 10Hz - đeo tai nghe</small></button>
+<button class="s-btn" data-sound="hz100">🔔 Âm 100Hz<small>Trầm 100Hz, ổn định</small></button>
+</div>
+<p class="hint" id="soundNote">Chọn 1 tiếng để phát. Tất cả tạo bằng Web Audio, không cần file ngoài.</p>
+<div style="display:flex;justify-content:space-between;margin-top:12px"><label>Âm lượng</label><b id="volLabel">38%</b></div>
+<input type="range" id="volSlider" min="0" max="100" value="38">
+</div>
+
+<!-- FOCUS OVERLAY -->
+<div id="focusOverlay">
+<button class="btn btn-g" id="focusClose" style="position:absolute;top:16px;right:16px">✕ Thoát (Esc)</button>
+<button class="btn btn-g" id="focusRotate" style="position:absolute;top:16px;left:16px">⟳ Xoay ngang</button>
+<div class="badge" id="focusPhase" style="background:rgba(255,255,255,.15);color:#fff">FOCUS MODE</div>
+<h2 id="focusTitle" style="margin:12px 0 0">FocusTime</h2>
+<div class="big" id="focusTime">25:00</div>
+<p class="hint" id="focusHint" style="color:#c7c7e8">Hãy tập trung, đừng chạm điện thoại.</p>
+<div class="row" style="margin-top:18px"><button class="btn btn-p" id="focusStart">▶ Bắt đầu / Dừng (Space)</button><button class="btn btn-g" id="focusSkip" style="background:#fff;color:#111">⏭ Bỏ qua (L)</button></div>
+<p class="hint" style="margin-top:14px;color:#a5a5c8">Tip: Xoay ngang điện thoại để thấy timer to hơn.</p>
+</div>
+
+<div class="kbd-bar"><span><kbd>Space</kbd> Bắt đầu/Dừng</span><span><kbd>R</kbd> Đặt lại</span><span><kbd>L</kbd> Lap / Bỏ qua</span><span><kbd>F</kbd> Focus</span><span><kbd>Esc</kbd> Thoát</span></div>
+
+<script>
+let theme=localStorage.getItem('ft_theme')||'dark'; document.documentElement.setAttribute('data-theme',theme); document.getElementById('themeBtn').textContent=theme==='dark'?'☀️':'🌙';
+document.getElementById('themeBtn').onclick=()=>{theme=theme==='dark'?'light':'dark';localStorage.setItem('ft_theme',theme);document.documentElement.setAttribute('data-theme',theme);document.getElementById('themeBtn').textContent=theme==='dark'?'☀️':'🌙';};
+let landscape=localStorage.getItem('ft_land')==='1'; if(landscape) document.body.classList.add('landscape');
+function toggleLand(){landscape=!landscape;document.body.classList.toggle('landscape',landscape);localStorage.setItem('ft_land',landscape?'1':'0');document.getElementById('rotateBtn').classList.toggle('active',landscape);document.getElementById('rotateBtn').textContent=landscape?'⟲ Xoay dọc lại':'⟳ Xoay ngang';try{if(landscape&&document.fullscreenElement&&screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape');else if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}}
+document.getElementById('rotateBtn').onclick=toggleLand; document.getElementById('focusRotate').onclick=toggleLand;
+if(landscape){document.getElementById('rotateBtn').textContent='⟲ Xoay dọc lại';document.getElementById('rotateBtn').classList.add('active')}
+function beep(freq=880,dur=.35,type='sine'){try{const c=new (window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.25,c.currentTime+.02);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+dur);o.connect(g).connect(c.destination);o.start();o.stop(c.currentTime+dur);}catch(e){}}
+// Tabs
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');['count','stop','smart'].forEach(t=>document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none')});
+// COUNTDOWN
+let cTotal=25*60,cLeft=25*60,cRun=false,cTimer=null,cHistory=JSON.parse(localStorage.getItem('ft_hist')||'[]');
+function fmt(s){s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function fmtMs(ms){let s=Math.floor(ms/1000),cs=Math.floor(ms%1000/10);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')+'.'+String(cs).padStart(2,'0')}
+function renderCount(){document.getElementById('countDisplay').textContent=fmt(cLeft);document.getElementById('countPct').textContent=Math.round(cLeft/cTotal*100)+'% còn lại';document.getElementById('countCircle').style.strokeDashoffset=703*(1-cLeft/cTotal);document.getElementById('countState').textContent=cRun?'Đang chạy...':(cLeft===0?'Hết giờ!':'Sẵn sàng');document.getElementById('countStart').textContent=cRun?'⏸ Tạm dừng':'▶ Bắt đầu';let h=document.getElementById('countHistory');h.innerHTML=cHistory.length?cHistory.map(x=>'<div>• '+x+'</div>').join(''):'Chưa có lần hẹn giờ nào.'}
+function setCount(min){cTotal=min*60;cLeft=cTotal;document.getElementById('inM').value=min;document.getElementById('inH').value=0;document.getElementById('inS').value=0;renderCount()}
+document.querySelectorAll('.preset').forEach(b=>b.onclick=()=>{document.querySelectorAll('.preset').forEach(x=>x.classList.remove('active'));b.classList.add('active');setCount(+b.dataset.min)});
+function startCount(){if(cRun){clearInterval(cTimer);cRun=false;renderCount();return}let h=+document.getElementById('inH').value||0,m=+document.getElementById('inM').value||0,s=+document.getElementById('inS').value||0;if(!cRun&&cLeft===cTotal||cLeft===0){let t=h*3600+m*60+s;if(t>0){cTotal=t;cLeft=t}}if(cLeft<=0)return;cRun=true;renderCount();cTimer=setInterval(()=>{cLeft--;renderCount();syncFocus();if(cLeft<=0){clearInterval(cTimer);cRun=false;if(document.getElementById('countSound').checked)beep(880,.6);cHistory.unshift(new Date().toLocaleTimeString('vi-VN')+' - '+fmt(cTotal));cHistory=cHistory.slice(0,5);localStorage.setItem('ft_hist',JSON.stringify(cHistory));renderCount();if(document.getElementById('countLoop').checked){cLeft=cTotal;setTimeout(startCount,800)}}},1000)}
+document.getElementById('countStart').onclick=startCount;
+document.getElementById('countReset').onclick=()=>{clearInterval(cTimer);cRun=false;cLeft=cTotal;renderCount()};
+// STOPWATCH
+let swElapsed=0,swRun=false,swLast=0,swTimer=null,swLaps=[];
+function renderStop(){document.getElementById('stopDisplay').textContent=fmtMs(swElapsed);document.getElementById('stopState').textContent=swRun?'Đang chạy...':'Tạm dừng';document.getElementById('stopStart').textContent=swRun?'⏸ Tạm dừng':'▶ Bắt đầu';document.getElementById('lapList').innerHTML=swLaps.map((l,i)=>'<div class="lap-row"><span>Lap '+(i+1)+'</span><b>'+fmtMs(l)+'</b></div>').join('')||'';document.getElementById('lapStats').textContent=swLaps.length?('Số vòng: '+swLaps.length+' • Trung bình: '+fmtMs(swLaps.reduce((a,b)=>a+b,0)/swLaps.length)):'Chưa có vòng nào.'}
+function startStop(){if(swRun){clearInterval(swTimer);swRun=false;renderStop();return}swRun=true;swLast=Date.now();swTimer=setInterval(()=>{swElapsed+=Date.now()-swLast;swLast=Date.now();renderStop();syncFocus()},31);renderStop()}
+document.getElementById('stopStart').onclick=startStop;
+document.getElementById('stopLap').onclick=()=>{if(!swRun&&swElapsed===0)return;swLaps.unshift(swElapsed);renderStop();beep(1200,.12)};
+document.getElementById('stopReset').onclick=()=>{clearInterval(swTimer);swRun=false;swElapsed=0;swLaps=[];renderStop()};
+document.getElementById('clearLaps').onclick=()=>{swLaps=[];renderStop()};
+// SMART
+const PACKAGES=[
+{id:'lythuyet',cat:'lythuyet',name:'Gói Học Lý Thuyết',tag:'Đọc hiểu, Nghe giảng, Tổng hợp',badge:'50/10',desc:'50 học - 10 nghỉ ×3, nghỉ dài 25 phút. Tổng 205 phút.',why:'Lý thuyết cần 10-15 phút để nóng máy. Trong 50 phút: 15 đọc + 25 hiểu + ví dụ + 10 tự tóm tắt lại bằng lời mình. Nghỉ: đi lại, uống nước, không lướt điện thoại.',focus:50,rest:10,rounds:3,long:25},
+{id:'hocthuoc',cat:'hocthuoc',name:'Gói Học Thuộc - Nhớ Lâu',tag:'Văn, Sử, Địa, Từ vựng',badge:'25/5',desc:'25 học - 5 nghỉ ×4, nghỉ dài 20 phút. Tổng 140 phút.',why:'Trí nhớ thích chunk ngắn + tự kiểm tra. Trong 25 phút: 20 nạp (chia nhỏ, từ khóa) + 5 che vở tự hỏi - trả lời. Ôn lại sau: 1 - 3 - 7 - 14 - 30 ngày.',focus:25,rest:5,rounds:4,long:20},
+{id:'baitap',cat:'baitap',name:'Gói Bài Tập - Toán, Lý, Hóa',tag:'Toán, Lý, Hóa, Tin học',badge:'45/10',desc:'45 học - 10 nghỉ ×3, nghỉ dài 20 phút. Tổng 185 phút.',why:'Theo tỉ lệ 70/30: 10 ôn công thức + 30 tự giải + 5 ghi lỗi sai vào sổ lỗi. 40-50 phút là khoảng tối ưu cho tư duy sâu.',focus:45,rest:10,rounds:3,long:20},
+{id:'chongtri',cat:'khoi',name:'Gói Chống Trì Hoãn',tag:'Khởi động nhanh, Vượt lười',badge:'25/5',desc:'25 học - 5 nghỉ ×4, nghỉ dài 15 phút. Tổng 135 phút.',why:'Pomodoro kinh điển cho lúc chán, mệt, không muốn bắt đầu. Chỉ cần cam kết 25 phút đầu tiên.',focus:25,rest:5,rounds:4,long:15},
+{id:'deep',cat:'sau',name:'Gói Deep Work / Luyện Đề',tag:'Chạy nước rút, Đề tổng hợp',badge:'90/20',desc:'90 học - 20 nghỉ ×2. Tổng 220 phút.',why:'Theo chu kỳ tập trung ~90 phút của não. Tối đa 2 vòng/ngày, phải ngủ đủ, uống nước. Dùng cho luận văn, đề dài, ôn thi gấp.',focus:90,rest:20,rounds:2,long:20}
+];
+let selPkg=PACKAGES[0],smartPhases=[],smartIdx=0,smartLeft=0,smartRun=false,smartTimer=null,smartTotal=0,smartDoneTime=0;
+function buildPhases(p){let a=[];for(let i=0;i<p.rounds;i++){a.push({type:'hoc',label:'HỌC - Vòng '+(i+1),min:p.focus,hint:p.id==='hocthuoc'?'20 phút nạp + 5 phút tự kiểm tra (che vở, tự hỏi)':p.id==='baitap'?'10 ôn công thức + 30 tự giải + 5 ghi lỗi sai':p.id==='lythuyet'?'15 đọc + 25 hiểu + ví dụ + 10 tự tóm tắt':'Tập trung 1 việc duy nhất, tắt thông báo'});if(i<p.rounds-1)a.push({type:'nghi',label:'NGHỈ NGẮN',min:p.rest,hint:'Đứng dậy, uống nước, giãn mắt. Không lướt điện thoại.'});}a.push({type:'nghidai',label:'NGHỈ DÀI',min:p.long,hint:'Nghỉ dài, đi bộ nhẹ, ăn nhẹ. Đừng học tiếp trong đầu.'});return a}
+function renderPkgs(){let q=(document.getElementById('pkgSearch').value||'').toLowerCase(),f=document.getElementById('pkgFilter').value;let list=PACKAGES.filter(p=>(f==='all'||p.cat===f)&&((p.name+p.tag+p.desc).toLowerCase().includes(q)));document.getElementById('pkgList').innerHTML=list.map(p=>'<button class="pkg-card '+(p.id===selPkg.id?'sel':'')+'" onclick="selectPkg(\''+p.id+'\')"><div style="display:flex;justify-content:space-between"><b>'+p.name+'</b><span class="badge">'+p.badge+'</span></div><div class="hint" style="margin:6px 0">'+p.tag+'</div><div style="font-size:14px">'+p.desc+'</div><div style="margin-top:10px"><span class="btn btn-p" style="padding:8px 14px;font-size:13px">Chọn gói này →</span></div></button>').join('')||'<p class="hint">Không tìm thấy gói nào.</p>';document.getElementById('pkgWhy').textContent=selPkg.why}
+window.selectPkg=(id)=>{selPkg=PACKAGES.find(p=>p.id===id);renderPkgs();document.getElementById('smartPkgName').textContent=selPkg.name;document.getElementById('smartPhaseHint').textContent=selPkg.desc;smartPhases=buildPhases(selPkg);smartIdx=0;smartLeft=smartPhases[0].min*60;smartTotal=smartPhases.reduce((a,b)=>a+b.min*60,0);renderSmart()};
+document.getElementById('pkgSearch').oninput=renderPkgs;document.getElementById('pkgFilter').onchange=renderPkgs;
+function renderSmart(){let cur=smartPhases[smartIdx];if(!cur){document.getElementById('smartDisplay').textContent='--:--';return}document.getElementById('smartDisplay').textContent=fmt(smartLeft);document.getElementById('smartPhaseBadge').textContent=cur.label+(smartRun?' • Đang chạy':' • Tạm dừng');document.getElementById('smartRound').textContent='Phase '+(smartIdx+1)+' / '+smartPhases.length+' • Tổng còn '+fmt(smartTotal-smartDoneTime);document.getElementById('smartPhaseHint').textContent=cur.hint;let elapsed=smartPhases.slice(0,smartIdx).reduce((a,b)=>a+b.min*60,0)+(cur.min*60-smartLeft);document.getElementById('smartProgress').style.width=Math.min(100,elapsed/smartTotal*100)+'%';document.getElementById('smartTimeline').innerHTML=smartPhases.map((p,i)=>'<div class="phase '+(i<smartIdx?'done':i===smartIdx?'now':'')+'"><div class="dot">'+(i<smartIdx?'✓':i===smartIdx?'●':'○')+'</div><div style="flex:1"><b>'+p.label+'</b><div class="hint">'+p.min+' phút • '+p.hint+'</div></div><b>'+fmt(i===smartIdx?smartLeft:p.min*60)+'</b></div>').join('');document.getElementById('smartStart').textContent=smartRun?'⏸ Tạm dừng':'▶ Bắt đầu gói'}
+function startSmart(){if(!smartPhases.length)selectPkg(selPkg.id);if(smartRun){clearInterval(smartTimer);smartRun=false;renderSmart();return}smartRun=true;smartTimer=setInterval(()=>{smartLeft--;smartDoneTime++;renderSmart();syncFocus();if(smartLeft<=0){beep(smartPhases[smartIdx].type==='hoc'?880:660,.4);smartIdx++;if(smartIdx>=smartPhases.length){clearInterval(smartTimer);smartRun=false;document.getElementById('smartDone').style.display='block';document.getElementById('smartDoneText').textContent='Bạn đã hoàn thành '+selPkg.name+'. Tổng tập trung: '+Math.round(smartTotal/60)+' phút. Nhớ ôn lại sau 1 - 3 - 7 ngày nếu là gói Học thuộc.';renderSmart();return}smartLeft=smartPhases[smartIdx].min*60;renderSmart()}},1000);renderSmart()}
+document.getElementById('smartStart').onclick=startSmart;
+document.getElementById('smartSkip').onclick=()=>{if(!smartPhases.length)return;smartIdx=Math.min(smartPhases.length-1,smartIdx+1);smartLeft=smartPhases[smartIdx].min*60;renderSmart()};
+document.getElementById('smartReset').onclick=()=>{clearInterval(smartTimer);smartRun=false;smartPhases=[];smartIdx=0;smartLeft=0;document.getElementById('smartDone').style.display='none';document.getElementById('smartDisplay').textContent='--:--';document.getElementById('smartPkgName').textContent='Hãy chọn 1 gói ở trên để bắt đầu';document.getElementById('smartTimeline').innerHTML='';document.getElementById('smartProgress').style.width='0%'};
+// SOUND ENGINE - Web Audio only
+let actx=null, soundNodes=[], dropletTimer=null, curSound='off', masterGain=null;
+function getCtx(){if(!actx){actx=new (window.AudioContext||window.webkitAudioContext)();masterGain=actx.createGain();masterGain.gain.value=(+document.getElementById('volSlider').value)/100*0.6;let comp=actx.createDynamicsCompressor();masterGain.connect(comp);comp.connect(actx.destination)}if(actx.state==='suspended')actx.resume();return actx}
+function makeNoiseBuffer(c,seconds,brown=false){let buf=c.createBuffer(1,c.sampleRate*seconds,c.sampleRate),d=buf.getChannelData(0),last=0;for(let i=0;i<d.length;i++){let w=Math.random()*2-1;if(brown){last=(last+0.02*w)/1.02;d[i]=last*3.5}else d[i]=w}return buf}
+function stopSound(){soundNodes.forEach(n=>{try{n.stop?n.stop():n.disconnect()}catch(e){}});soundNodes=[];if(dropletTimer){clearInterval(dropletTimer);dropletTimer=null}if(actx){try{masterGain.disconnect()}catch(e){}}curSound='off';document.getElementById('soundStatus').textContent='Tắt';document.querySelectorAll('.s-btn').forEach(b=>b.classList.toggle('sel',b.dataset.sound==='off'))}
+function startSound(type){stopSound();if(type==='off')return;let c=getCtx();masterGain.disconnect();let comp=c.createDynamicsCompressor();masterGain.connect(comp);comp.connect(c.destination);let vol=(+document.getElementById('volSlider').value)/100;if(type==='alpha')vol*=0.55;masterGain.gain.setTargetAtTime(vol*0.6,c.currentTime,.3);curSound=type;
+if(type==='white'){let src=c.createBufferSource();src.buffer=makeNoiseBuffer(c,2);src.loop=true;let lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1200;let hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=200;let g=c.createGain();g.gain.value=.7;let lfo=c.createOscillator();lfo.frequency.value=.07;let lg=c.createGain();lg.gain.value=.12;lfo.connect(lg);lg.connect(g.gain);src.connect(hp);hp.connect(lp);lp.connect(g);g.connect(masterGain);src.start();lfo.start();soundNodes.push(src,lfo)}
+else if(type==='rain'){let bg=c.createBufferSource();bg.buffer=makeNoiseBuffer(c,2);bg.loop=true;let lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;let g1=c.createGain();g1.gain.value=.35;bg.connect(lp);lp.connect(g1);g1.connect(masterGain);bg.start();soundNodes.push(bg);let hi=c.createBufferSource();hi.buffer=makeNoiseBuffer(c,2);hi.loop=true;let bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=3500;bp.Q.value=.7;let g2=c.createGain();g2.gain.value=.12;hi.connect(bp);bp.connect(g2);g2.connect(masterGain);hi.start();soundNodes.push(hi);dropletTimer=setInterval(()=>{try{let s=c.createBufferSource();s.buffer=makeNoiseBuffer(c,.06);let p=c.createStereoPanner();p.pan.value=Math.random()*2-1;let f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=2000+Math.random()*3000;let g=c.createGain();g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.08+Math.random()*.08,c.currentTime+.01);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.06);s.connect(f);f.connect(g);g.connect(p);p.connect(masterGain);s.start();s.stop(c.currentTime+.07)}catch(e){}},120+Math.random()*220)}
+else if(type==='brown'){let src=c.createBufferSource();src.buffer=makeNoiseBuffer(c,3,true);src.loop=true;let lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=400;let g=c.createGain();g.gain.value=.9;src.connect(lp);lp.connect(g);g.connect(masterGain);src.start();soundNodes.push(src);let sub=c.createOscillator();sub.type='sine';sub.frequency.value=60;let sg=c.createGain();sg.gain.value=.08;sub.connect(sg);sg.connect(masterGain);sub.start();soundNodes.push(sub)}
+else if(type==='alpha'){[200,210].forEach((f,i)=>{let o=c.createOscillator();o.type='sine';o.frequency.value=f;let p=c.createStereoPanner();p.pan.value=i===0?-1:1;let g=c.createGain();g.gain.value=.18;o.connect(g);g.connect(p);p.connect(masterGain);o.start();soundNodes.push(o)});[100,150].forEach(f=>{let o=c.createOscillator();o.type='sine';o.frequency.value=f;let g=c.createGain();g.gain.value=.04;o.connect(g);g.connect(masterGain);o.start();soundNodes.push(o)});document.getElementById('soundNote').textContent='Đang phát Sóng Alpha 10Hz - Đeo tai nghe để nghe binaural rõ nhất.'}
+else if(type==='hz100'){[100,200,50].forEach((f,i)=>{let o=c.createOscillator();o.type='sine';o.frequency.value=f;let g=c.createGain();g.gain.value=i===0?.35:i===1?.05:.03;o.connect(g);g.connect(masterGain);o.start();soundNodes.push(o)});let lfo=c.createOscillator();lfo.frequency.value=.5;let lg=c.createGain();lg.gain.value=.03;lfo.connect(lg);lg.connect(masterGain.gain);lfo.start();soundNodes.push(lfo)}
+document.getElementById('soundStatus').textContent='Đang phát • '+({white:'Ồn trắng nhẹ',rain:'Mưa rơi dịu',brown:'Ồn nâu ấm',alpha:'Sóng Alpha',hz100:'Âm 100Hz'}[type]||type);document.querySelectorAll('.s-btn').forEach(b=>b.classList.toggle('sel',b.dataset.sound===type));if(type!=='alpha')document.getElementById('soundNote').textContent='Đang phát. Tất cả tạo bằng Web Audio, không cần file ngoài.'}
+document.querySelectorAll('.s-btn').forEach(b=>b.onclick=()=>startSound(b.dataset.sound));
+document.getElementById('volSlider').oninput=(e)=>{document.getElementById('volLabel').textContent=e.target.value+'%';if(masterGain&&actx)masterGain.gain.setTargetAtTime((+e.target.value)/100*0.6,actx.currentTime,.05)};
+document.getElementById('soundBtn').onclick=()=>document.getElementById('soundPanel').classList.toggle('open');
+// FOCUS
+function syncFocus(){let title='FocusTime',time='';if(smartPhases.length&&smartPhases[smartIdx]){time=fmt(smartLeft);title=smartPhases[smartIdx].label}else if(document.getElementById('tab-count').style.display!=='none'||cRun){time=fmt(cLeft);title='Hẹn giờ'}else{time=fmtMs(swElapsed);title='Bấm giờ'}document.getElementById('focusTime').textContent=time||'--:--';document.getElementById('focusTitle').textContent=selPkg.name+' • '+(smartPhases[smartIdx]?smartPhases[smartIdx].label:'FocusTime')}
+function openFocus(){document.getElementById('focusOverlay').classList.add('open');syncFocus();try{if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}}
+function closeFocus(){document.getElementById('focusOverlay').classList.remove('open');try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
+document.getElementById('focusBtn').onclick=openFocus;document.getElementById('smartFocus').onclick=openFocus;document.getElementById('focusClose').onclick=closeFocus;
+document.getElementById('focusStart').onclick=()=>{let active=document.querySelector('.tab.active').dataset.tab;if(active==='smart')startSmart();else if(active==='count')startCount();else startStop()};
+document.getElementById('focusSkip').onclick=()=>{let active=document.querySelector('.tab.active').dataset.tab;if(active==='smart')document.getElementById('smartSkip').click();else if(active==='stop')document.getElementById('stopLap').click()};
+// TITLE realtime
+setInterval(()=>{let active=document.querySelector('.tab.active').dataset.tab;let t='FocusTime - Bấm Giờ Học Thông Minh';if(active==='count'&&cTotal>0)t=fmt(cLeft)+' • '+(cRun?'Đang hẹn giờ':'Hẹn giờ')+' | FocusTime';if(active==='stop'&&swElapsed>0)t=fmtMs(swElapsed)+' • Bấm giờ | FocusTime';if(active==='smart'&&smartPhases.length)t=fmt(smartLeft)+' • '+(smartRun?'Đang ':'')+smartPhases[smartIdx].label+' | FocusTime';document.title=t;if(active==='count'&&cRun)document.getElementById('focusTime').textContent=fmt(cLeft)},1000);
+// SHORTCUTS
+document.addEventListener('keydown',e=>{let tag=(e.target.tagName||'').toLowerCase();if(['input','textarea','select'].includes(tag))return;if(e.code==='Space'){e.preventDefault();let a=document.querySelector('.tab.active').dataset.tab;if(a==='count')startCount();else if(a==='stop')startStop();else startSmart()}else if(e.key==='r'||e.key==='R'){let a=document.querySelector('.tab.active').dataset.tab;if(a==='count')document.getElementById('countReset').click();else if(a==='stop')document.getElementById('stopReset').click();else document.getElementById('smartReset').click()}else if(e.key==='l'||e.key==='L'){let a=document.querySelector('.tab.active').dataset.tab;if(a==='stop')document.getElementById('stopLap').click();else if(a==='smart')document.getElementById('smartSkip').click()}else if(e.key==='f'||e.key==='F'){document.getElementById('focusOverlay').classList.contains('open')?closeFocus():openFocus()}else if(e.key==='Escape'){if(document.getElementById('focusOverlay').classList.contains('open'))closeFocus();else document.getElementById('soundPanel').classList.remove('open')}});
+renderCount();renderStop();renderPkgs();selectPkg('lythuyet');
+</script>
+</body>
+</html>
