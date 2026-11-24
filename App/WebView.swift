@@ -7,7 +7,7 @@ struct WebView: UIViewRepresentable {
         config.allowsInlineMediaPlayback = true
         let web = WKWebView(frame: .zero, configuration: config)
         web.scrollView.bounces = false
-        if let url = Bundle.main.url(forResource: "Index", withExtension: "html") {
+        if let url = Bundle.main.url(forResource: "index", withExtension: "html") {
             web.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
         }
         return web
