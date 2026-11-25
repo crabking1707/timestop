@@ -81,6 +81,172 @@ body.landscape .ring{width:220px;height:220px}
 .hint{font-size:13px;color:var(--muted);line-height:1.6}
 .progress{height:10px;background:var(--card2);border-radius:999px;overflow:hidden}
 .progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s}
+
+/* === FIX HEADER SAFE-AREA (iOS/Mobile Portrait) === */
+header{padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.h-in{flex-wrap:wrap}
+@media(max-width:640px){
+  header{padding-top:max(8px,env(safe-area-inset-top,0px))}
+  .h-in{padding:8px 12px 10px;gap:8px;flex-direction:column;align-items:stretch}
+  .logo{justify-content:flex-start}
+  .h-btns{justify-content:flex-start;gap:6px}
+  .icon-btn{padding:8px 10px;font-size:13px;min-height:36px}
+}
+/* === FIX SOUND PANEL (Portrait & Landscape Scrollable) === */
+.sound-backdrop{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.28);display:none}
+.sound-backdrop.open{display:block}
+.sound-panel{
+  position:fixed;
+  right:max(14px,env(safe-area-inset-right,0px));
+  top:var(--sp-top,78px);
+  z-index:60;
+  width:min(380px,calc(100vw - 28px));
+  max-height:calc(100vh - var(--sp-top,78px) - 16px);
+  max-height:calc(100dvh - var(--sp-top,78px) - env(safe-area-inset-bottom,0px) - 16px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding-bottom:20px;
+}
+.sp-head{display:flex;justify-content:space-between;align-items:center;gap:8px;position:sticky;top:-16px;background:var(--card);padding:4px 0 8px;margin-bottom:4px;z-index:2;border-bottom:1px solid var(--line)}
+.sp-close{border:1px solid var(--line);background:var(--card2);color:var(--text);width:30px;height:30px;border-radius:999px;cursor:pointer;font-size:14px;display:grid;place-items:center;flex-shrink:0}
+.sp-vol-box{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+@media(max-height:500px){
+  .sound-panel{padding:12px 14px 18px}
+  .s-grid{gap:6px;margin:8px 0}
+  .s-btn{padding:8px 9px;font-size:13px}
+}
+/* === FOCUS MODE REAL-TIME CLOCK (LEFT) === */
+#focusOverlay{
+  padding-top:max(18px,env(safe-area-inset-top,0px));
+  padding-bottom:max(18px,env(safe-area-inset-bottom,0px));
+  padding-left:max(18px,env(safe-area-inset-left,0px));
+  padding-right:max(18px,env(safe-area-inset-right,0px));
+}
+#focusClose{top:max(16px,calc(env(safe-area-inset-top,0px) + 8px))!important;right:max(16px,calc(env(safe-area-inset-right,0px) + 8px))!important}
+#focusRotate{top:max(16px,calc(env(safe-area-inset-top,0px) + 8px))!important;left:max(16px,calc(env(safe-area-inset-left,0px) + 8px))!important}
+.focus-clock{
+  position:absolute;
+  left:max(18px,calc(env(safe-area-inset-left,0px) + 12px));
+  top:max(78px,calc(env(safe-area-inset-top,0px) + 74px));
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.14);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-radius:16px;
+  padding:8px 14px;
+  text-align:left;
+  z-index:105;
+  pointer-events:none;
+}
+.focus-clock-time{font-size:clamp(18px,3.2vw,28px);font-weight:900;letter-spacing:.5px;font-variant-numeric:tabular-nums;color:#fff;line-height:1.15}
+.focus-clock-date{font-size:11px;color:#b8b8dc;font-weight:600;margin-top:2px}
+@media(max-width:540px){
+  .focus-clock{top:max(68px,calc(env(safe-area-inset-top,0px) + 64px));padding:6px 11px;border-radius:12px}
+  .focus-clock-time{font-size:17px}
+  .focus-clock-date{font-size:10px}
+}
+/* === YOUTUBE TAB === */
+.yt-search-bar{display:flex;gap:8px;align-items:center}
+.yt-search-bar input{flex:1}
+.yt-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.yt-chip{border:1px solid var(--line);background:var(--card2);color:var(--text);padding:7px 12px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer}
+.yt-chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.yt-status{margin-top:10px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.yt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px}
+.yt-card{background:var(--card2);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:border-color .2s,transform .15s;text-align:left;color:var(--text);padding:0}
+.yt-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.yt-thumb-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#0e0e22;overflow:hidden}
+.yt-thumb{width:100%;height:100%;object-fit:cover;display:block}
+.yt-dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.82);color:#fff;font-size:11px;font-weight:800;padding:2px 6px;border-radius:6px;font-variant-numeric:tabular-nums}
+.yt-body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.yt-title{font-size:14px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.yt-meta{font-size:12px;color:var(--muted)}
+.yt-actions-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+/* === FLOATING MINI YOUTUBE PLAYER (PiP Cốc Cốc + Focus Mode Swipe-In) === */
+.yt-pip{
+  position:fixed;
+  right:max(14px,calc(env(safe-area-inset-right,0px) + 10px));
+  top:max(78px,calc(env(safe-area-inset-top,0px) + 72px));
+  width:min(248px,56vw);
+  aspect-ratio:16/9;
+  background:#090914;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 16px 40px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.16);
+  z-index:150;
+  display:none;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  transition:transform .28s cubic-bezier(.22,1,.36,1),opacity .22s ease;
+}
+.yt-pip.open{display:block}
+.yt-pip.dragging{transition:none}
+.yt-pip.tucked{
+  transform:translateX(calc(100% + 26px))!important;
+  opacity:0;
+  pointer-events:none;
+}
+.yt-pip-media{position:absolute;inset:0;width:100%;height:100%;background:#000}
+.yt-pip-media iframe,.yt-pip-media video{width:100%;height:100%;border:0;display:block;object-fit:cover}
+.yt-pip-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.18) 45%,rgba(0,0,0,.68) 100%);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:8px 10px;
+  opacity:1;
+  transition:opacity .22s ease;
+  z-index:3;
+}
+.yt-pip.controls-hidden .yt-pip-overlay{opacity:0;pointer-events:none}
+.yt-pip-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.yt-pip-mid{display:flex;justify-content:center;align-items:center;gap:16px}
+.yt-pip-btn{
+  border:0;background:rgba(0,0,0,.45);color:#fff;
+  width:30px;height:30px;border-radius:999px;
+  display:grid;place-items:center;cursor:pointer;font-size:13px;font-weight:800;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.yt-pip-btn.play-main{width:38px;height:38px;font-size:17px;background:rgba(0,0,0,.6)}
+.yt-pip-btn:active{transform:scale(.92)}
+.yt-pip-bottom{display:flex;flex-direction:column;gap:4px}
+.yt-pip-title{font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,.85)}
+.yt-pip-bar{width:100%;height:4px;background:rgba(255,255,255,.32);border-radius:999px;overflow:hidden;cursor:pointer}
+.yt-pip-bar i{display:block;height:100%;width:0%;background:#fff;border-radius:999px}
+.yt-pip-tap{position:absolute;inset:0;z-index:2;background:transparent}
+/* Right-edge tucked pill tab (<) matching IMG_5221 */
+.yt-pip-tab{
+  position:fixed;
+  right:0;
+  top:max(96px,calc(env(safe-area-inset-top,0px) + 90px));
+  width:28px;
+  height:76px;
+  border-radius:14px 0 0 14px;
+  background:rgba(95,105,118,.78);
+  border:1px solid rgba(255,255,255,.22);
+  border-right:0;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  color:#fff;
+  font-size:20px;
+  font-weight:900;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  z-index:155;
+  box-shadow:-4px 6px 20px rgba(0,0,0,.45);
+  touch-action:none;
+  user-select:none;
+}
+.yt-pip-tab.open{display:flex}
+.yt-pip-tab:active{background:rgba(124,92,255,.85)}
+@media(max-height:460px){
+  .yt-pip{width:205px;top:64px}
+  .yt-pip-tab{top:80px;height:68px}
+}
+
 </style>
 </head>
 <body>
@@ -99,6 +265,7 @@ body.landscape .ring{width:220px;height:220px}
 <button class="tab active" data-tab="count">⏳ Hẹn giờ</button>
 <button class="tab" data-tab="stop">⏱ Bấm giờ</button>
 <button class="tab" data-tab="smart">🧠 Thông minh</button>
+<button class="tab" data-tab="yt">▶️ YouTube</button>
 </div>
 
 <!-- COUNTDOWN -->
@@ -142,11 +309,54 @@ body.landscape .ring{width:220px;height:220px}
 
 <div class="card" style="margin-top:14px"><h3>🎧 Âm thanh đề xuất cho gói này</h3><div id="soundSuggest" style="margin-top:10px;background:var(--card2);border:1px solid var(--line);padding:14px;border-radius:16px"><b id="suggestTitle">Chọn 1 gói để xem gợi ý</b><p class="hint" id="suggestReason" style="margin:8px 0">Mỗi loại việc hợp 1 loại tiếng khác nhau. Có lời sẽ làm giảm đọc hiểu + ghi nhớ, nên gói nào cần ngôn ngữ sẽ ưu tiên tiếng không lời.</p><div class="row" style="justify-content:flex-start"><button class="btn btn-p" id="playSuggestBtn" style="padding:10px 16px">▶ Phát âm thanh đề xuất</button><button class="btn btn-g" id="playAltBtn" style="padding:10px 16px">Thử phương án 2</button></div><p class="hint" id="suggestLoop" style="margin-top:8px"></p></div><h3 style="margin-top:16px">Vì sao gói này hiệu quả?</h3><p class="hint" id="pkgWhy" style="margin-top:8px">Chọn 1 gói để xem lý do khoa học.</p><p class="hint" style="margin-top:8px"><b>Gợi ý ôn lại (Spaced Repetition):</b> 1 ngày - 3 ngày - 7 ngày - 14 ngày - 30 ngày. Đặc biệt quan trọng với gói Học thuộc.</p></div>
 </section>
+
+<!-- YOUTUBE -->
+<section id="tab-yt" style="display:none">
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+    <div>
+      <h3 style="margin:0">▶️ YouTube Phát Nền (Không Quảng Cáo)</h3>
+      <p class="hint" style="margin-top:4px">Tìm video như trên YouTube hoặc dán link YouTube. Video sẽ nổi kiểu Cốc Cốc, phát nền liên tục cả khi vào Focus Mode và có thể kéo giấu vào mép phải.</p>
+    </div>
+    <span class="badge" id="ytModeBadge">Sẵn sàng</span>
+  </div>
+  <form id="ytSearchForm" class="yt-search-bar">
+    <input id="ytSearchInput" type="search" placeholder="🔍 Tìm kiếm trên YouTube hoặc dán link youtube.com / youtu.be...">
+    <button type="submit" class="btn btn-p" id="ytSearchBtn" style="white-space:nowrap;padding:12px 16px">Tìm kiếm</button>
+  </form>
+  <div class="yt-chips" id="ytChips">
+    <button type="button" class="yt-chip active" data-q="lofi hip hop study beats">🎧 Lofi học bài</button>
+    <button type="button" class="yt-chip" data-q="nhạc không lời tập trung học bài piano">🎹 Piano tập trung</button>
+    <button type="button" class="yt-chip" data-q="rain lofi chill study">🌧️ Mưa &amp; Lofi</button>
+    <button type="button" class="yt-chip" data-q="anime lofi chill remix">🌸 Anime Chill</button>
+    <button type="button" class="yt-chip" data-q="study with me pomodoro 50 10">📚 Study With Me</button>
+    <button type="button" class="yt-chip" data-q="nhạc game edm không lời tập trung">🎮 Nhạc Game</button>
+  </div>
+  <div class="yt-actions-row">
+    <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="ytLoopChk" checked style="width:auto"> Lặp lại video</label>
+    <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="ytAutoPipChk" checked style="width:auto"> Tự hiện nổi khi vào Focus</label>
+    <button type="button" class="btn btn-g" id="ytShowPipBtn" style="padding:8px 13px;font-size:13px;display:none">📺 Hiện lại cửa sổ nổi</button>
+    <button type="button" class="btn btn-g" id="ytStopAllBtn" style="padding:8px 13px;font-size:13px;display:none">⏹ Dừng video</button>
+  </div>
+  <div class="yt-status">
+    <span id="ytStatusText">Chọn video gợi ý bên dưới hoặc nhập từ khóa để tìm trên YouTube.</span>
+  </div>
+  <div class="yt-grid" id="ytResults"></div>
+</div>
+<div class="card" id="ytRecentCard" style="margin-top:14px;display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+    <h3 style="margin:0">🕒 Đã xem gần đây</h3>
+    <button type="button" class="btn btn-g" id="ytClearRecentBtn" style="padding:7px 12px;font-size:12px">Xóa lịch sử</button>
+  </div>
+  <div class="yt-grid" id="ytRecentGrid"></div>
+</div>
+</section>
 </div>
 
+<div class="sound-backdrop" id="soundBackdrop"></div>
 <!-- SOUND PANEL -->
 <div class="sound-panel" id="soundPanel">
-<div style="display:flex;justify-content:space-between;align-items:center"><b>ÂM THANH TẬP TRUNG</b><span class="badge" id="soundStatus">Tắt</span></div>
+<div class="sp-head"><b>ÂM THANH TẬP TRUNG</b><div style="display:flex;align-items:center;gap:6px"><span class="badge" id="soundStatus">Tắt</span><button type="button" class="sp-close" id="soundCloseBtn" aria-label="Đóng bảng âm thanh" title="Đóng">✕</button></div></div>
 <div class="s-grid">
 <button class="s-btn sel" data-sound="off">🔇 Tắt<small>Không phát gì</small></button>
 <button class="s-btn" data-sound="white">〰️ Ồn trắng nhẹ<small>Êm, che tiếng ồn</small></button>
@@ -160,14 +370,15 @@ body.landscape .ring{width:220px;height:220px}
 <button class="s-btn" data-sound="pink">🌸 Ồn hồng<small>Mới - Tốt cho ghi nhớ</small></button>
 </div>
 <p class="hint" id="soundNote">Mưa = file bạn gửi (tích tắc + sấm mở đầu, sau đó lặp từ giây 6). Lofi = file bạn gửi (vòng hợp âm lặp từ đầu). Nhạc game = file EDM bạn gửi (phát hết bài rồi lặp lại từ đầu). Phòng thi = tiếng nền rất nhẹ + tích tắc đồng hồ, tạo bằng Web Audio. Còn lại tạo bằng Web Audio.</p>
-<div style="display:flex;justify-content:space-between;margin-top:12px"><label>Âm lượng</label><b id="volLabel">38%</b></div>
-<input type="range" id="volSlider" min="0" max="100" value="38">
+<div class="sp-vol-box"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><label>Âm lượng</label><b id="volLabel">38%</b></div>
+<input type="range" id="volSlider" min="0" max="100" value="38"></div>
 </div>
 
 <!-- FOCUS OVERLAY -->
 <div id="focusOverlay">
 <button class="btn btn-g" id="focusClose" style="position:absolute;top:16px;right:16px">✕ Thoát (Esc)</button>
 <button class="btn btn-g" id="focusRotate" style="position:absolute;top:16px;left:16px">⟳ Xoay ngang</button>
+<div class="focus-clock" id="focusClock" aria-live="off"><div class="focus-clock-time" id="focusClockTime">--:--:--</div><div class="focus-clock-date" id="focusClockDate"></div></div>
 <div class="badge" id="focusPhase" style="background:rgba(255,255,255,.15);color:#fff">FOCUS MODE</div>
 <h2 id="focusTitle" style="margin:12px 0 0">FocusTime</h2>
 <div class="big" id="focusTime">25:00</div>
@@ -175,6 +386,32 @@ body.landscape .ring{width:220px;height:220px}
 <div class="row" style="margin-top:18px"><button class="btn btn-p" id="focusStart">▶ Bắt đầu / Dừng (Space)</button><button class="btn btn-g" id="focusSkip" style="background:#fff;color:#111">⏭ Bỏ qua (L)</button></div>
 <p class="hint" style="margin-top:14px;color:#a5a5c8">Tip: Xoay ngang điện thoại để thấy timer to hơn.</p>
 </div>
+
+
+<!-- FLOATING YOUTUBE PiP PLAYER (Cốc Cốc style + Focus Mode swipe-in) -->
+<div class="yt-pip" id="ytPip" aria-label="Trình phát YouTube nổi">
+  <div class="yt-pip-media" id="ytPipMedia"></div>
+  <div class="yt-pip-tap" id="ytPipTap"></div>
+  <div class="yt-pip-overlay" id="ytPipOverlay">
+    <div class="yt-pip-top">
+      <button type="button" class="yt-pip-btn" id="ytPipClose" title="Đóng video">✕</button>
+      <div style="display:flex;gap:6px">
+        <button type="button" class="yt-pip-btn" id="ytPipNative" title="Phát nền PiP hệ thống">⧉</button>
+        <button type="button" class="yt-pip-btn" id="ytPipTuckBtn" title="Thu gọn vào mép phải">›</button>
+      </div>
+    </div>
+    <div class="yt-pip-mid">
+      <button type="button" class="yt-pip-btn" id="ytPipBack10" title="Lùi 10 giây">↺10</button>
+      <button type="button" class="yt-pip-btn play-main" id="ytPipPlayPause" title="Phát / Tạm dừng">⏸</button>
+      <button type="button" class="yt-pip-btn" id="ytPipFwd10" title="Tua 10 giây">10↻</button>
+    </div>
+    <div class="yt-pip-bottom">
+      <div class="yt-pip-title" id="ytPipTitle">Đang phát YouTube...</div>
+      <div class="yt-pip-bar" id="ytPipBar"><i id="ytPipProgress"></i></div>
+    </div>
+  </div>
+</div>
+<button type="button" class="yt-pip-tab" id="ytPipTab" title="Kéo hoặc chạm để mở lại video" aria-label="Mở lại video YouTube">‹</button>
 
 <div class="kbd-bar"><span><kbd>Space</kbd> Bắt đầu/Dừng</span><span><kbd>R</kbd> Đặt lại</span><span><kbd>L</kbd> Lap / Bỏ qua</span><span><kbd>F</kbd> Focus</span><span><kbd>Esc</kbd> Thoát</span></div>
 
@@ -848,7 +1085,7 @@ document.getElementById('rotateBtn').onclick=toggleLand; document.getElementById
 if(landscape){document.getElementById('rotateBtn').textContent='⟲ Xoay dọc lại';document.getElementById('rotateBtn').classList.add('active')}
 function beep(freq=880,dur=.35,type='sine'){try{const c=new (window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.25,c.currentTime+.02);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+dur);o.connect(g).connect(c.destination);o.start();o.stop(c.currentTime+dur);}catch(e){}}
 // Tabs
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');['count','stop','smart'].forEach(t=>document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none')});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');['count','stop','smart','yt'].forEach(t=>document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none')});
 // COUNTDOWN
 let cTotal=25*60,cLeft=25*60,cRun=false,cTimer=null,cHistory=JSON.parse(localStorage.getItem('ft_hist')||'[]');
 function fmt(s){s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
@@ -897,8 +1134,8 @@ function renderSuggest(){
   document.getElementById('suggestReason').textContent = s.reason;
   document.getElementById('suggestLoop').textContent = '↻ ' + s.loop;
 }
-document.getElementById('playSuggestBtn').onclick=()=>{ let s=SOUND_SUGGEST[selPkg.id]; if(s) startSound(s.main); document.getElementById('soundPanel').classList.add('open'); };
-document.getElementById('playAltBtn').onclick=()=>{ let s=SOUND_SUGGEST[selPkg.id]; if(s) startSound(s.alt); document.getElementById('soundPanel').classList.add('open'); };
+document.getElementById('playSuggestBtn').onclick=()=>{ let s=SOUND_SUGGEST[selPkg.id]; if(s) startSound(s.main); setSoundPanelOpen(true); };
+document.getElementById('playAltBtn').onclick=()=>{ let s=SOUND_SUGGEST[selPkg.id]; if(s) startSound(s.alt); setSoundPanelOpen(true); };
 const _oldRenderPkgs = renderPkgs;
 renderPkgs = function(){ _oldRenderPkgs(); renderSuggest(); };
 
@@ -1015,18 +1252,68 @@ else if(type==='hz100'){[100,200,50].forEach((f,i)=>{let o=c.createOscillator();
 document.getElementById('soundStatus').textContent='Đang phát • '+({white:'Ồn trắng nhẹ',rain:'Mưa rơi dịu',brown:'Ồn nâu ấm',alpha:'Sóng Alpha',hz100:'Âm 100Hz',lofi:'Lofi Chill',pink:'Ồn hồng',game:'Nhạc game',room:'Phòng thi'}[type]||type);document.querySelectorAll('.s-btn').forEach(b=>b.classList.toggle('sel',b.dataset.sound===type));if(type!=='alpha')document.getElementById('soundNote').textContent='Đang phát. Tất cả tạo bằng Web Audio, không cần file ngoài.'}
 document.querySelectorAll('.s-btn').forEach(b=>b.onclick=(e)=>{ if(e) e.stopPropagation(); try{ if(actx&&actx.state==='suspended') actx.resume(); }catch(err){} startSound(b.dataset.sound); });
 document.getElementById('volSlider').oninput=(e)=>{document.getElementById('volLabel').textContent=e.target.value+'%';let v=(+e.target.value)/100;if(masterGain&&actx){try{masterGain.gain.setTargetAtTime(v*0.6,actx.currentTime,.05);}catch(err){}}try{ RainSound.setVolume(v); }catch(err){}try{ LofiSound.setVolume(v*0.9); }catch(err){}try{ GameSound.setVolume(v*0.8); }catch(err){}try{ RoomSound.setVolume(v*0.9); }catch(err){}};
-document.getElementById('soundBtn').onclick=()=>document.getElementById('soundPanel').classList.toggle('open');
+function positionSoundPanel(){
+  var hdr=document.querySelector('header');
+  var topPx=hdr?Math.ceil(hdr.getBoundingClientRect().bottom+8):78;
+  topPx=Math.max(52,Math.min(topPx,Math.floor(window.innerHeight*0.42)));
+  document.documentElement.style.setProperty('--sp-top',topPx+'px');
+}
+function setSoundPanelOpen(open){
+  var p=document.getElementById('soundPanel');
+  var bd=document.getElementById('soundBackdrop');
+  if(open){positionSoundPanel();p.classList.add('open');if(bd)bd.classList.add('open');}
+  else{p.classList.remove('open');if(bd)bd.classList.remove('open');}
+}
+document.getElementById('soundBtn').onclick=(e)=>{if(e)e.stopPropagation();setSoundPanelOpen(!document.getElementById('soundPanel').classList.contains('open'));};
+document.getElementById('soundCloseBtn').onclick=()=>setSoundPanelOpen(false);
+document.getElementById('soundBackdrop').onclick=()=>setSoundPanelOpen(false);
+window.addEventListener('resize',()=>{if(document.getElementById('soundPanel').classList.contains('open'))positionSoundPanel();});
+window.addEventListener('orientationchange',()=>{setTimeout(()=>{if(document.getElementById('soundPanel').classList.contains('open'))positionSoundPanel();},150);});
 // FOCUS
 function syncFocus(){let title='FocusTime',time='';if(smartPhases.length&&smartPhases[smartIdx]){time=fmt(smartLeft);title=smartPhases[smartIdx].label}else if(document.getElementById('tab-count').style.display!=='none'||cRun){time=fmt(cLeft);title='Hẹn giờ'}else{time=fmtMs(swElapsed);title='Bấm giờ'}document.getElementById('focusTime').textContent=time||'--:--';document.getElementById('focusTitle').textContent=selPkg.name+' • '+(smartPhases[smartIdx]?smartPhases[smartIdx].label:'FocusTime')}
-function openFocus(){document.getElementById('focusOverlay').classList.add('open');syncFocus();try{if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}}
-function closeFocus(){document.getElementById('focusOverlay').classList.remove('open');try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
+function updateFocusClock(){
+  var now=new Date();
+  var hh=String(now.getHours()).padStart(2,'0');
+  var mm=String(now.getMinutes()).padStart(2,'0');
+  var ss=String(now.getSeconds()).padStart(2,'0');
+  var elT=document.getElementById('focusClockTime');
+  var elD=document.getElementById('focusClockDate');
+  if(elT) elT.textContent=hh+':'+mm+':'+ss;
+  if(elD){
+    var days=['CN','T2','T3','T4','T5','T6','T7'];
+    elD.textContent=days[now.getDay()]+', '+String(now.getDate()).padStart(2,'0')+'/'+String(now.getMonth()+1).padStart(2,'0')+'/'+now.getFullYear();
+  }
+}
+updateFocusClock();
+setInterval(updateFocusClock,1000);
+function openFocus(){
+  setSoundPanelOpen(false);
+  document.getElementById('focusOverlay').classList.add('open');
+  syncFocus();
+  updateFocusClock();
+  if(typeof window.onEnterFocusYT==='function') window.onEnterFocusYT();
+  try{if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}
+}
+function closeFocus(){
+  document.getElementById('focusOverlay').classList.remove('open');
+  try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}
+}
 document.getElementById('focusBtn').onclick=openFocus;document.getElementById('smartFocus').onclick=openFocus;document.getElementById('focusClose').onclick=closeFocus;
-document.getElementById('focusStart').onclick=()=>{let active=document.querySelector('.tab.active').dataset.tab;if(active==='smart')startSmart();else if(active==='count')startCount();else startStop()};
-document.getElementById('focusSkip').onclick=()=>{let active=document.querySelector('.tab.active').dataset.tab;if(active==='smart')document.getElementById('smartSkip').click();else if(active==='stop')document.getElementById('stopLap').click()};
+document.getElementById('focusStart').onclick=()=>{
+  let active=document.querySelector('.tab.active').dataset.tab;
+  if(active==='smart'||(active==='yt'&&smartPhases.length))startSmart();
+  else if(active==='count'||active==='yt')startCount();
+  else startStop();
+};
+document.getElementById('focusSkip').onclick=()=>{
+  let active=document.querySelector('.tab.active').dataset.tab;
+  if(active==='smart'||(active==='yt'&&smartPhases.length))document.getElementById('smartSkip').click();
+  else if(active==='stop')document.getElementById('stopLap').click();
+};
 // TITLE realtime
 setInterval(()=>{let active=document.querySelector('.tab.active').dataset.tab;let t='FocusTime - Bấm Giờ Học Thông Minh';if(active==='count'&&cTotal>0)t=fmt(cLeft)+' • '+(cRun?'Đang hẹn giờ':'Hẹn giờ')+' | FocusTime';if(active==='stop'&&swElapsed>0)t=fmtMs(swElapsed)+' • Bấm giờ | FocusTime';if(active==='smart'&&smartPhases.length)t=fmt(smartLeft)+' • '+(smartRun?'Đang ':'')+smartPhases[smartIdx].label+' | FocusTime';document.title=t;if(active==='count'&&cRun)document.getElementById('focusTime').textContent=fmt(cLeft)},1000);
 // SHORTCUTS
-document.addEventListener('keydown',e=>{let tag=(e.target.tagName||'').toLowerCase();if(['input','textarea','select'].includes(tag))return;if(e.code==='Space'){e.preventDefault();let a=document.querySelector('.tab.active').dataset.tab;if(a==='count')startCount();else if(a==='stop')startStop();else startSmart()}else if(e.key==='r'||e.key==='R'){let a=document.querySelector('.tab.active').dataset.tab;if(a==='count')document.getElementById('countReset').click();else if(a==='stop')document.getElementById('stopReset').click();else document.getElementById('smartReset').click()}else if(e.key==='l'||e.key==='L'){let a=document.querySelector('.tab.active').dataset.tab;if(a==='stop')document.getElementById('stopLap').click();else if(a==='smart')document.getElementById('smartSkip').click()}else if(e.key==='f'||e.key==='F'){document.getElementById('focusOverlay').classList.contains('open')?closeFocus():openFocus()}else if(e.key==='Escape'){if(document.getElementById('focusOverlay').classList.contains('open'))closeFocus();else document.getElementById('soundPanel').classList.remove('open')}});
+document.addEventListener('keydown',e=>{let tag=(e.target.tagName||'').toLowerCase();if(['input','textarea','select'].includes(tag))return;if(e.code==='Space'){e.preventDefault();let a=document.querySelector('.tab.active').dataset.tab;if(a==='count')startCount();else if(a==='stop')startStop();else startSmart()}else if(e.key==='r'||e.key==='R'){let a=document.querySelector('.tab.active').dataset.tab;if(a==='count')document.getElementById('countReset').click();else if(a==='stop')document.getElementById('stopReset').click();else document.getElementById('smartReset').click()}else if(e.key==='l'||e.key==='L'){let a=document.querySelector('.tab.active').dataset.tab;if(a==='stop')document.getElementById('stopLap').click();else if(a==='smart')document.getElementById('smartSkip').click()}else if(e.key==='f'||e.key==='F'){document.getElementById('focusOverlay').classList.contains('open')?closeFocus():openFocus()}else if(e.key==='Escape'){if(document.getElementById('focusOverlay').classList.contains('open'))closeFocus();else setSoundPanelOpen(false)}});
 renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 </script>
 
@@ -1109,5 +1396,582 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   acquire(); ui();
 })();
 </script>
+
+<script>
+/* ===== YOUTUBE SEARCH + AD-FREE BACKGROUND PiP (CỐC CỐC STYLE) + FOCUS SWIPE-IN ===== */
+(function(){
+  const PIPED_APIS = [
+    'https://api.piped.private.coffee',
+    'https://pipedapi.kavin.rocks',
+    'https://pipedapi.adminforge.de'
+  ];
+  const INVIDIOUS_APIS = [
+    'https://inv.nadeko.net',
+    'https://iv.ggtyler.dev',
+    'https://yewtu.be'
+  ];
+
+  // Curated fallback & starter study videos (real YouTube IDs)
+  const CURATED_VIDEOS = [
+    { id:'jfKfPfyJRdk', title:'lofi hip hop radio 📚 beats to relax/study to', author:'Lofi Girl', duration:'LIVE', views:'Lofi học bài', cat:'lofi' },
+    { id:'4xDzrJKXOOY', title:'synthwave radio 🌌 beats to chill/game to', author:'Lofi Girl', duration:'LIVE', views:'Nhạc tập trung', cat:'lofi' },
+    { id:'lTRiuFIWV54', title:'1 A.M Study Session 📚 [lofi hip hop/chill beats]', author:'Lofi Girl', duration:'1:01:14', views:'Lofi học bài', cat:'lofi' },
+    { id:'DWcJFNfaw9c', title:'Lofi Rain 🌧️ Chill Beats to Study / Relax to', author:'Lofi Girl', duration:'1:00:00', views:'Mưa & Lofi', cat:'rain' },
+    { id:'7NOSDKb0HlU', title:'Chillhop Radio - jazzy & lofi hip hop beats 🐾', author:'Chillhop Music', duration:'LIVE', views:'Lofi học bài', cat:'lofi' },
+    { id:'4oStw0r33so', title:'Peaceful Piano Music for Studying & Concentration', author:'Quiet Quest', duration:'3:00:00', views:'Piano tập trung', cat:'piano' },
+    { id:'WPni755-Krg', title:'Study Music Alpha Waves: Relaxing Studying Music', author:'Yellow Brick Cinema', duration:'3:02:14', views:'Piano tập trung', cat:'piano' },
+    { id:'q76bMs-NwRk', title:'Rain Sound On Window with Thunder Sounds', author:'Relaxing White Noise', duration:'3:00:00', views:'Mưa & Lofi', cat:'rain' },
+    { id:'rUxyKA_-grg', title:'lofi hip hop radio 💤 beats to sleep/chill to', author:'Lofi Girl', duration:'LIVE', views:'Anime Chill', cat:'anime' },
+    { id:'n61ULEU7CO0', title:'Best of lofi hip hop 2021 ✨ beats to relax/study to', author:'Lofi Girl', duration:'2:39:52', views:'Anime Chill', cat:'anime' },
+    { id:'1ex_bNIFR1A', title:'Study With Me 📚 2 Hours Pomodoro 50/10 (No Music)', author:'Merve', duration:'2:00:05', views:'Study With Me', cat:'study' },
+    { id:'5yx6BWlEVcY', title:'Chillhop Music - Study / Focus Instrumental Beats', author:'Chillhop Music', duration:'LIVE', views:'Nhạc Game', cat:'game' }
+  ];
+
+  let ytRecent = [];
+  try { ytRecent = JSON.parse(localStorage.getItem('ft_yt_recent') || '[]'); } catch(e){ ytRecent = []; }
+
+  const searchForm = document.getElementById('ytSearchForm');
+  const searchInput = document.getElementById('ytSearchInput');
+  const resultsEl = document.getElementById('ytResults');
+  const statusEl = document.getElementById('ytStatusText');
+  const modeBadge = document.getElementById('ytModeBadge');
+  const recentCard = document.getElementById('ytRecentCard');
+  const recentGrid = document.getElementById('ytRecentGrid');
+  const clearRecentBtn = document.getElementById('ytClearRecentBtn');
+  const showPipBtn = document.getElementById('ytShowPipBtn');
+  const stopAllBtn = document.getElementById('ytStopAllBtn');
+  const loopChk = document.getElementById('ytLoopChk');
+  const autoPipChk = document.getElementById('ytAutoPipChk');
+
+  const pipEl = document.getElementById('ytPip');
+  const pipMedia = document.getElementById('ytPipMedia');
+  const pipTap = document.getElementById('ytPipTap');
+  const pipTitle = document.getElementById('ytPipTitle');
+  const pipBar = document.getElementById('ytPipBar');
+  const pipProgress = document.getElementById('ytPipProgress');
+  const pipTab = document.getElementById('ytPipTab');
+  const btnClose = document.getElementById('ytPipClose');
+  const btnNative = document.getElementById('ytPipNative');
+  const btnTuck = document.getElementById('ytPipTuckBtn');
+  const btnBack10 = document.getElementById('ytPipBack10');
+  const btnPlayPause = document.getElementById('ytPipPlayPause');
+  const btnFwd10 = document.getElementById('ytPipFwd10');
+
+  let curVideo = null;        // {id, title, author, duration}
+  let playerKind = 'none';    // 'native' | 'iframe' | 'none'
+  let nativeVideo = null;
+  let ytIframe = null;
+  let isPlaying = false;
+  let isTucked = false;
+  let hideCtrlTimer = null;
+  let estTime = 0;
+  let estDuration = 0;
+  let iframeTicker = null;
+
+  function escHtml(s){
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function fmtDur(sec){
+    sec = Number(sec);
+    if (!sec || sec < 0 || !isFinite(sec)) return 'LIVE';
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = Math.floor(sec % 60);
+    return h > 0
+      ? h + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')
+      : m + ':' + String(s).padStart(2,'0');
+  }
+  function fmtViews(v){
+    if (typeof v === 'string') return v;
+    v = Number(v);
+    if (!v || !isFinite(v)) return '';
+    if (v >= 1e6) return (v / 1e6).toFixed(1).replace(/\.0$/,'') + 'M lượt xem';
+    if (v >= 1e3) return (v / 1e3).toFixed(1).replace(/\.0$/,'') + 'K lượt xem';
+    return v + ' lượt xem';
+  }
+  function extractYoutubeId(text){
+    if (!text) return null;
+    const t = text.trim();
+    if (/^[A-Za-z0-9_-]{11}$/.test(t)) return t;
+    const m = t.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  async function fetchJsonWithTimeout(url, ms){
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), ms || 4500);
+    try {
+      const res = await fetch(url, { signal: ctrl.signal });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    } finally {
+      clearTimeout(tid);
+    }
+  }
+
+  async function searchYouTubeLive(query){
+    const q = encodeURIComponent(query);
+    for (let i = 0; i < PIPED_APIS.length; i++){
+      try {
+        const data = await fetchJsonWithTimeout(PIPED_APIS[i] + '/search?q=' + q + '&filter=videos', 4500);
+        const items = (data && data.items) ? data.items : [];
+        const mapped = items.filter(it => it && it.url && it.url.includes('v=')).map(it => {
+          const id = extractYoutubeId('https://youtube.com' + it.url);
+          return {
+            id: id,
+            title: it.title || 'Video YouTube',
+            author: it.uploaderName || 'YouTube',
+            duration: it.duration > 0 ? fmtDur(it.duration) : 'LIVE',
+            views: fmtViews(it.views) || it.uploadedDate || '',
+            thumb: it.thumbnail || (id ? 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg' : '')
+          };
+        }).filter(v => v.id);
+        if (mapped.length) return { items: mapped.slice(0, 12), source: 'live' };
+      } catch(e){}
+    }
+    for (let i = 0; i < INVIDIOUS_APIS.length; i++){
+      try {
+        const data = await fetchJsonWithTimeout(INVIDIOUS_APIS[i] + '/api/v1/search?q=' + q + '&type=video', 4500);
+        if (Array.isArray(data) && data.length){
+          const mapped = data.filter(it => it && it.videoId).map(it => ({
+            id: it.videoId,
+            title: it.title || 'Video YouTube',
+            author: it.author || 'YouTube',
+            duration: it.lengthSeconds > 0 ? fmtDur(it.lengthSeconds) : 'LIVE',
+            views: fmtViews(it.viewCount) || it.publishedText || '',
+            thumb: 'https://i.ytimg.com/vi/' + it.videoId + '/hqdefault.jpg'
+          }));
+          if (mapped.length) return { items: mapped.slice(0, 12), source: 'live' };
+        }
+      } catch(e){}
+    }
+    return { items: [], source: 'fallback' };
+  }
+
+  async function resolveDirectStream(videoId){
+    for (let i = 0; i < PIPED_APIS.length; i++){
+      try {
+        const data = await fetchJsonWithTimeout(PIPED_APIS[i] + '/streams/' + videoId, 4200);
+        if (data && Array.isArray(data.videoStreams)){
+          // Prefer muxed mp4 stream (video + audio, zero ads, works in native <video> + PiP + background)
+          const muxed = data.videoStreams.filter(s => s && !s.videoOnly && s.url && (s.mimeType || '').includes('mp4'));
+          if (muxed.length){
+            muxed.sort((a,b) => (parseInt(a.quality)||360) - (parseInt(b.quality)||360));
+            const pick = muxed.find(s => (parseInt(s.quality)||0) >= 360) || muxed[0];
+            return { url: pick.url, title: data.title, author: data.uploader, duration: data.duration || 0 };
+          }
+        }
+      } catch(e){}
+    }
+    return null;
+  }
+
+  function renderCards(container, list){
+    if (!list || !list.length){
+      container.innerHTML = '<p class="hint">Không tìm thấy video phù hợp. Bạn có thể thử từ khóa khác hoặc dán trực tiếp link YouTube vào ô tìm kiếm.</p>';
+      return;
+    }
+    container.innerHTML = list.map((v, idx) => {
+      const thumb = v.thumb || ('https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg');
+      return '<button type="button" class="yt-card" data-vid="' + escHtml(v.id) + '" data-idx="' + idx + '">'
+        + '<div class="yt-thumb-wrap"><img class="yt-thumb" loading="lazy" src="' + escHtml(thumb) + '" alt="">'
+        + '<span class="yt-dur">' + escHtml(v.duration || 'VIDEO') + '</span></div>'
+        + '<div class="yt-body"><div class="yt-title">' + escHtml(v.title) + '</div>'
+        + '<div class="yt-meta">' + escHtml(v.author) + (v.views ? ' • ' + escHtml(v.views) : '') + '</div></div></button>';
+    }).join('');
+
+    container.querySelectorAll('.yt-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const vid = btn.dataset.vid;
+        const found = list.find(x => x.id === vid);
+        if (found) playYouTubeVideo(found);
+      });
+    });
+  }
+
+  function saveRecent(v){
+    ytRecent = [v].concat(ytRecent.filter(x => x.id !== v.id)).slice(0, 6);
+    try { localStorage.setItem('ft_yt_recent', JSON.stringify(ytRecent)); } catch(e){}
+    renderRecent();
+  }
+
+  function renderRecent(){
+    if (!ytRecent.length){ recentCard.style.display = 'none'; return; }
+    recentCard.style.display = 'block';
+    renderCards(recentGrid, ytRecent);
+  }
+
+  function showControlsTemporarily(){
+    pipEl.classList.remove('controls-hidden');
+    clearTimeout(hideCtrlTimer);
+    hideCtrlTimer = setTimeout(() => {
+      if (isPlaying) pipEl.classList.add('controls-hidden');
+    }, 3200);
+  }
+
+  function updatePlayButton(){
+    btnPlayPause.textContent = isPlaying ? '⏸' : '▶';
+    if (curVideo){
+      modeBadge.textContent = isPlaying ? 'Đang phát nền' : 'Tạm dừng';
+      modeBadge.classList.toggle('on', isPlaying);
+    } else {
+      modeBadge.textContent = 'Sẵn sàng';
+      modeBadge.classList.remove('on');
+    }
+  }
+
+  function updateMediaSession(v){
+    try {
+      if ('mediaSession' in navigator && v){
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: v.title || 'FocusTime YouTube',
+          artist: v.author || 'YouTube',
+          artwork: [{ src: 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg', sizes: '480x360', type: 'image/jpeg' }]
+        });
+        navigator.mediaSession.setActionHandler('play', () => togglePlayPause(true));
+        navigator.mediaSession.setActionHandler('pause', () => togglePlayPause(false));
+        navigator.mediaSession.setActionHandler('seekbackward', () => seekBy(-10));
+        navigator.mediaSession.setActionHandler('seekforward', () => seekBy(10));
+      }
+    } catch(e){}
+  }
+
+  function sendIframeCmd(func, args){
+    if (!ytIframe || !ytIframe.contentWindow) return;
+    try {
+      ytIframe.contentWindow.postMessage(JSON.stringify({
+        event: 'command',
+        func: func,
+        args: args || []
+      }), '*');
+    } catch(e){}
+  }
+
+  function stopPlayer(){
+    clearInterval(iframeTicker);
+    if (nativeVideo){
+      try { nativeVideo.pause(); nativeVideo.src = ''; } catch(e){}
+      nativeVideo = null;
+    }
+    ytIframe = null;
+    pipMedia.innerHTML = '';
+    playerKind = 'none';
+    isPlaying = false;
+    curVideo = null;
+    isTucked = false;
+    pipEl.classList.remove('open', 'tucked');
+    pipTab.classList.remove('open');
+    showPipBtn.style.display = 'none';
+    stopAllBtn.style.display = 'none';
+    pipProgress.style.width = '0%';
+    updatePlayButton();
+  }
+
+  function tuckPip(tuck){
+    if (!curVideo) return;
+    isTucked = !!tuck;
+    pipEl.style.left = '';
+    pipEl.style.right = '';
+    pipEl.style.transform = '';
+    pipEl.classList.toggle('tucked', isTucked);
+    pipTab.classList.toggle('open', isTucked);
+    if (!isTucked) showControlsTemporarily();
+  }
+
+  async function playYouTubeVideo(video){
+    if (!video || !video.id) return;
+    clearInterval(iframeTicker);
+    if (nativeVideo){ try { nativeVideo.pause(); } catch(e){} nativeVideo = null; }
+    ytIframe = null;
+    pipMedia.innerHTML = '';
+    curVideo = video;
+    saveRecent(video);
+
+    pipTitle.textContent = video.title || 'YouTube';
+    pipEl.style.left = '';
+    pipEl.style.right = '';
+    pipEl.style.top = '';
+    pipEl.style.transform = '';
+    pipEl.classList.add('open');
+    pipEl.classList.remove('tucked');
+    pipTab.classList.remove('open');
+    isTucked = false;
+    showPipBtn.style.display = 'inline-block';
+    stopAllBtn.style.display = 'inline-block';
+    statusEl.textContent = 'Đang kết nối luồng phát không quảng cáo: ' + video.title;
+    showControlsTemporarily();
+    updateMediaSession(video);
+
+    // Try ad-free direct stream first (true background + native PiP + 0 YouTube ads)
+    const direct = await resolveDirectStream(video.id);
+    if (curVideo !== video) return; // user switched video while resolving
+
+    if (direct && direct.url){
+      playerKind = 'native';
+      const v = document.createElement('video');
+      v.src = direct.url;
+      v.playsInline = true;
+      v.setAttribute('playsinline', '');
+      v.autoplay = true;
+      v.loop = !!loopChk.checked;
+      v.controls = false;
+      v.addEventListener('play', () => { isPlaying = true; updatePlayButton(); showControlsTemporarily(); });
+      v.addEventListener('pause', () => { isPlaying = false; updatePlayButton(); pipEl.classList.remove('controls-hidden'); });
+      v.addEventListener('timeupdate', () => {
+        if (v.duration > 0){
+          pipProgress.style.width = Math.min(100, (v.currentTime / v.duration) * 100) + '%';
+        }
+      });
+      v.addEventListener('error', () => {
+        if (curVideo === video) mountNoCookieIframe(video);
+      });
+      pipMedia.appendChild(v);
+      nativeVideo = v;
+      try {
+        await v.play();
+        isPlaying = true;
+        statusEl.textContent = 'Đang phát nền (luồng trực tiếp không quảng cáo): ' + video.title;
+      } catch(e){
+        // Fallback to youtube-nocookie iframe if direct stream blocked
+        mountNoCookieIframe(video);
+      }
+      updatePlayButton();
+    } else {
+      mountNoCookieIframe(video);
+    }
+  }
+
+  function mountNoCookieIframe(video){
+    playerKind = 'iframe';
+    nativeVideo = null;
+    pipMedia.innerHTML = '';
+    const ifr = document.createElement('iframe');
+    const loopParam = loopChk.checked ? '&loop=1&playlist=' + encodeURIComponent(video.id) : '';
+    ifr.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(video.id)
+      + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=0&enablejsapi=1' + loopParam;
+    ifr.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    ifr.setAttribute('allowfullscreen', '');
+    ifr.referrerPolicy = 'strict-origin-when-cross-origin';
+    pipMedia.appendChild(ifr);
+    ytIframe = ifr;
+    isPlaying = true;
+    estTime = 0;
+    estDuration = 300;
+    pipProgress.style.width = '12%';
+    clearInterval(iframeTicker);
+    iframeTicker = setInterval(() => {
+      if (isPlaying && playerKind === 'iframe'){
+        estTime += 1;
+        pipProgress.style.width = Math.min(100, (estTime % estDuration) / estDuration * 100) + '%';
+      }
+    }, 1000);
+    statusEl.textContent = 'Đang phát nền (YouTube No-Cookie): ' + video.title;
+    updatePlayButton();
+    showControlsTemporarily();
+  }
+
+  function togglePlayPause(forceState){
+    if (!curVideo) return;
+    const next = typeof forceState === 'boolean' ? forceState : !isPlaying;
+    if (playerKind === 'native' && nativeVideo){
+      if (next) nativeVideo.play().catch(()=>{});
+      else nativeVideo.pause();
+    } else if (playerKind === 'iframe'){
+      sendIframeCmd(next ? 'playVideo' : 'pauseVideo');
+      isPlaying = next;
+      updatePlayButton();
+    }
+    showControlsTemporarily();
+  }
+
+  function seekBy(delta){
+    if (!curVideo) return;
+    if (playerKind === 'native' && nativeVideo){
+      nativeVideo.currentTime = Math.max(0, Math.min(nativeVideo.duration || 1e9, nativeVideo.currentTime + delta));
+    } else if (playerKind === 'iframe'){
+      estTime = Math.max(0, estTime + delta);
+      sendIframeCmd('seekTo', [estTime, true]);
+    }
+    showControlsTemporarily();
+  }
+
+  // Controls events
+  pipTap.addEventListener('click', () => {
+    if (pipEl.classList.contains('controls-hidden')) showControlsTemporarily();
+    else pipEl.classList.add('controls-hidden');
+  });
+  btnClose.addEventListener('click', (e) => { e.stopPropagation(); stopPlayer(); });
+  btnTuck.addEventListener('click', (e) => { e.stopPropagation(); tuckPip(true); });
+  btnPlayPause.addEventListener('click', (e) => { e.stopPropagation(); togglePlayPause(); });
+  btnBack10.addEventListener('click', (e) => { e.stopPropagation(); seekBy(-10); });
+  btnFwd10.addEventListener('click', (e) => { e.stopPropagation(); seekBy(10); });
+  btnNative.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (playerKind === 'native' && nativeVideo && document.pictureInPictureEnabled){
+      try {
+        if (document.pictureInPictureElement) await document.exitPictureInPicture();
+        else await nativeVideo.requestPictureInPicture();
+      } catch(err){ tuckPip(true); }
+    } else {
+      tuckPip(true);
+    }
+  });
+  pipBar.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const r = pipBar.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+    if (playerKind === 'native' && nativeVideo && nativeVideo.duration){
+      nativeVideo.currentTime = pct * nativeVideo.duration;
+    } else if (playerKind === 'iframe'){
+      estTime = Math.floor(pct * estDuration);
+      pipProgress.style.width = (pct * 100) + '%';
+      sendIframeCmd('seekTo', [estTime, true]);
+    }
+    showControlsTemporarily();
+  });
+  loopChk.addEventListener('change', () => {
+    if (nativeVideo) nativeVideo.loop = !!loopChk.checked;
+  });
+  showPipBtn.addEventListener('click', () => { if (curVideo) tuckPip(false); });
+  stopAllBtn.addEventListener('click', stopPlayer);
+  clearRecentBtn.addEventListener('click', () => {
+    ytRecent = [];
+    try { localStorage.removeItem('ft_yt_recent'); } catch(e){}
+    renderRecent();
+  });
+
+  // Drag & Swipe-in gesture on #ytPip (drag freely or swipe right into the edge tab)
+  let drag = null;
+  pipEl.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('button') || e.target.closest('.yt-pip-bar')) return;
+    const rect = pipEl.getBoundingClientRect();
+    drag = {
+      id: e.pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      origLeft: rect.left,
+      origTop: rect.top,
+      width: rect.width,
+      height: rect.height,
+      moved: false
+    };
+    pipEl.classList.add('dragging');
+    try { pipEl.setPointerCapture(e.pointerId); } catch(err){}
+  });
+  pipEl.addEventListener('pointermove', (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.startX;
+    const dy = e.clientY - drag.startY;
+    if (!drag.moved && Math.hypot(dx, dy) > 6) drag.moved = true;
+    if (!drag.moved) return;
+    const nextLeft = drag.origLeft + dx;
+    const nextTop = Math.max(10, Math.min(window.innerHeight - drag.height - 10, drag.origTop + dy));
+    pipEl.style.right = 'auto';
+    pipEl.style.left = nextLeft + 'px';
+    pipEl.style.top = nextTop + 'px';
+  });
+  function endPipDrag(e){
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.startX;
+    const rect = pipEl.getBoundingClientRect();
+    const moved = drag.moved;
+    drag = null;
+    pipEl.classList.remove('dragging');
+    if (!moved) return;
+    // If dragged past right edge or swiped right strongly -> tuck into right-edge < tab
+    if (rect.right > window.innerWidth + 32 || (dx > 75 && rect.left > window.innerWidth * 0.48)){
+      pipTab.style.top = Math.max(60, Math.min(window.innerHeight - 90, rect.top + rect.height / 2 - 38)) + 'px';
+      tuckPip(true);
+    } else {
+      // Snap neatly inside viewport horizontally
+      const clampedLeft = Math.max(10, Math.min(window.innerWidth - rect.width - 10, rect.left));
+      pipEl.style.left = clampedLeft + 'px';
+    }
+  }
+  pipEl.addEventListener('pointerup', endPipDrag);
+  pipEl.addEventListener('pointercancel', endPipDrag);
+
+  // Pull/Tap the right-edge < tab to slide video back out
+  let tabDrag = null;
+  pipTab.addEventListener('pointerdown', (e) => {
+    tabDrag = { id: e.pointerId, startX: e.clientX, startY: e.clientY, triggered: false };
+    try { pipTab.setPointerCapture(e.pointerId); } catch(err){}
+  });
+  pipTab.addEventListener('pointermove', (e) => {
+    if (!tabDrag || e.pointerId !== tabDrag.id || tabDrag.triggered) return;
+    if (e.clientX - tabDrag.startX < -24){
+      tabDrag.triggered = true;
+      tuckPip(false);
+    }
+  });
+  pipTab.addEventListener('pointerup', (e) => {
+    if (!tabDrag || e.pointerId !== tabDrag.id) return;
+    const wasTriggered = tabDrag.triggered;
+    tabDrag = null;
+    if (!wasTriggered) tuckPip(false);
+  });
+  pipTab.addEventListener('pointercancel', () => { tabDrag = null; });
+
+  // Hook when entering Focus Mode
+  window.onEnterFocusYT = function(){
+    if (curVideo && autoPipChk.checked){
+      pipEl.classList.add('open');
+      if (!isTucked){
+        pipEl.style.left = '';
+        pipEl.style.right = '';
+        pipEl.style.top = '';
+        showControlsTemporarily();
+      }
+    }
+  };
+
+  // Search handling
+  async function runSearch(raw){
+    const q = (raw || '').trim();
+    if (!q){
+      renderCards(resultsEl, CURATED_VIDEOS);
+      statusEl.textContent = 'Gợi ý video tập trung sẵn sàng. Nhập từ khóa hoặc dán link YouTube để tìm.';
+      return;
+    }
+    const directId = extractYoutubeId(q);
+    if (directId){
+      const item = { id: directId, title: 'Video YouTube (' + directId + ')', author: 'Link trực tiếp', duration: 'PLAY', views: 'Không quảng cáo' };
+      renderCards(resultsEl, [item]);
+      playYouTubeVideo(item);
+      return;
+    }
+    statusEl.textContent = 'Đang tìm kiếm trên YouTube: "' + q + '"...';
+    const res = await searchYouTubeLive(q);
+    if (res.items.length){
+      renderCards(resultsEl, res.items);
+      statusEl.textContent = 'Tìm thấy ' + res.items.length + ' video cho "' + q + '". Chạm video để phát nền.';
+    } else {
+      const ql = q.toLowerCase();
+      const filtered = CURATED_VIDEOS.filter(v => (v.title + ' ' + v.author + ' ' + v.views + ' ' + v.cat).toLowerCase().includes(ql));
+      renderCards(resultsEl, filtered.length ? filtered : CURATED_VIDEOS);
+      statusEl.textContent = 'Máy chủ tìm kiếm tạm bận — đang hiện danh sách gợi ý. Bạn cũng có thể dán trực tiếp link YouTube vào ô tìm kiếm.';
+    }
+  }
+
+  searchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    runSearch(searchInput.value);
+  });
+
+  document.querySelectorAll('#ytChips .yt-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#ytChips .yt-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      searchInput.value = chip.dataset.q || '';
+      runSearch(chip.dataset.q || '');
+    });
+  });
+
+  // Initial render
+  renderCards(resultsEl, CURATED_VIDEOS);
+  renderRecent();
+})();
+</script>
+
 </body>
 </html>
