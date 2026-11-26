@@ -565,9 +565,9 @@ html,body{overflow-x:hidden;max-width:100%}
 
 
 /* === DEDICATED GOOGLE HOME PAGE STYLE === */
-.gh-top{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line)}
-.gh-tabs{display:flex;gap:16px}
-.gh-tab{border:0;background:transparent;color:var(--muted);font-weight:800;font-size:13px;padding:6px 2px;cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.3px}
+.gh-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.gh-tabs{display:flex;gap:14px;flex-wrap:nowrap}
+.gh-tab{border:0;background:transparent;color:var(--muted);font-weight:800;font-size:12.5px;padding:6px 2px;cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap}
 .gh-tab.active{color:#4285f4;border-bottom-color:#4285f4}
 .gh-center{text-align:center;padding:24px 6px 16px}
 .gh-big-logo{font-size:44px;font-weight:900;letter-spacing:-1.5px;line-height:1;margin-bottom:18px;display:inline-flex}
@@ -719,8 +719,8 @@ html,body{overflow-x:hidden;max-width:100%}
     </form>
 
     <div style="display:flex;justify-content:center;gap:8px;margin-top:12px;flex-wrap:wrap" id="gsEngPills">
-      <button type="button" class="gs-eng-pill active" data-eng="google_tab">Mở trang Google thật</button>
-      <button type="button" class="gs-eng-pill" data-eng="native">Xem nhanh trong app</button>
+      <button type="button" class="gs-eng-pill active" data-eng="native">Tìm ngay trong app</button>
+      <button type="button" class="gs-eng-pill" data-eng="google_tab">Mở trang Google thật</button>
       <button type="button" class="gs-eng-pill" data-eng="cse">Google CSE (Mã CX)</button>
     </div>
   </div>
@@ -2092,34 +2092,47 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   }
 
   async function resolveDirectStream(videoId){
+    let fallbackAudio = null;
     for (let i = 0; i < PIPED_APIS.length; i++){
       try {
-        const data = await fetchJsonWithTimeout(PIPED_APIS[i] + '/streams/' + videoId, 3800);
+        const data = await fetchJsonWithTimeout(PIPED_APIS[i] + '/streams/' + videoId, 3600);
         if (data && Array.isArray(data.videoStreams)){
           const muxed = data.videoStreams.filter(s => s && !s.videoOnly && s.url && (s.mimeType || '').includes('mp4'));
           if (muxed.length){
             muxed.sort((a,b) => (parseInt(a.quality)||360) - (parseInt(b.quality)||360));
             const pick = muxed.find(s => (parseInt(s.quality)||0) >= 360) || muxed[0];
-            return { url: pick.url, title: data.title, author: data.uploader, duration: data.duration || 0 };
+            return { kind: 'video', url: pick.url, title: data.title, author: data.uploader, duration: data.duration || 0 };
           }
+        }
+        if (!fallbackAudio && data && Array.isArray(data.audioStreams)){
+          const m4a = data.audioStreams.filter(s => s && s.url && ((s.mimeType || '').includes('mp4') || (s.mimeType || '').includes('m4a')));
+          const pickA = m4a[0] || data.audioStreams.find(s => s && s.url);
+          if (pickA) fallbackAudio = { kind: 'audio', url: pickA.url, title: data.title, author: data.uploader, duration: data.duration || 0 };
         }
       } catch(e){}
     }
     for (let i = 0; i < INVIDIOUS_APIS.length; i++){
       try {
-        const data = await fetchJsonWithTimeout(INVIDIOUS_APIS[i] + '/api/v1/videos/' + videoId + '?local=true', 3800);
+        const data = await fetchJsonWithTimeout(INVIDIOUS_APIS[i] + '/api/v1/videos/' + videoId, 3600);
         if (data && Array.isArray(data.formatStreams) && data.formatStreams.length){
           const mp4s = data.formatStreams.filter(s => s && s.url && (s.container === 'mp4' || (s.type || '').includes('mp4')));
           const pool = mp4s.length ? mp4s : data.formatStreams;
           const pick = pool.find(s => (s.qualityLabel || '').includes('360')) || pool[0];
           if (pick && pick.url){
             const url = pick.url.startsWith('http') ? pick.url : (INVIDIOUS_APIS[i] + pick.url);
-            return { url: url, title: data.title, author: data.author, duration: data.lengthSeconds || 0 };
+            return { kind: 'video', url: url, title: data.title, author: data.author, duration: data.lengthSeconds || 0 };
+          }
+        }
+        if (!fallbackAudio && data && Array.isArray(data.adaptiveFormats)){
+          const a = data.adaptiveFormats.find(s => s && s.url && (s.type || '').includes('audio/mp4'));
+          if (a){
+            const url = a.url.startsWith('http') ? a.url : (INVIDIOUS_APIS[i] + a.url);
+            fallbackAudio = { kind: 'audio', url: url, title: data.title, author: data.author, duration: data.lengthSeconds || 0 };
           }
         }
       } catch(e){}
     }
-    return null;
+    return fallbackAudio;
   }
 
   function renderCards(container, list){
@@ -2264,10 +2277,20 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 
     if (direct && direct.url){
       playerKind = 'native';
-      const v = document.createElement('video');
+      const isAudioOnly = direct.kind === 'audio';
+      const v = document.createElement(isAudioOnly ? 'audio' : 'video');
       v.src = direct.url;
-      v.playsInline = true;
-      v.setAttribute('playsinline', '');
+      if (!isAudioOnly){
+        v.playsInline = true;
+        v.setAttribute('playsinline', '');
+        v.poster = 'https://i.ytimg.com/vi/' + encodeURIComponent(video.id) + '/hqdefault.jpg';
+      } else {
+        const cover = document.createElement('img');
+        cover.src = 'https://i.ytimg.com/vi/' + encodeURIComponent(video.id) + '/hqdefault.jpg';
+        cover.alt = '';
+        cover.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+        pipMedia.appendChild(cover);
+      }
       v.autoplay = true;
       v.loop = !!loopChk.checked;
       v.controls = false;
@@ -2305,31 +2328,17 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     const originParams = isHttp
       ? '&enablejsapi=1&origin=' + encodeURIComponent(location.origin) + '&widget_referrer=' + encodeURIComponent(location.href)
       : '';
-    const list = [];
-    if (isHttp){
-      list.push({
-        label: 'YouTube Chuẩn',
-        url: 'https://www.youtube.com/embed/' + vid + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=1' + originParams + loopParam
-      });
-      list.push({
+    // Only use official YouTube embed domains (avoid Invidious HTML embeds that show bot-check pages like nadeko.net)
+    return [
+      {
         label: 'YouTube No-Cookie',
         url: 'https://www.youtube-nocookie.com/embed/' + vid + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=1' + originParams + loopParam
-      });
-    }
-    // Invidious embeds never trigger YouTube Error 153 (even on file:// or strict iOS PWA)
-    INVIDIOUS_APIS.forEach((host, idx) => {
-      list.push({
-        label: 'Nguồn phụ ' + (idx + 1) + ' (Không QC)',
-        url: host + '/embed/' + vid + '?autoplay=1&local=true' + (loopChk.checked ? '&loop=1' : '')
-      });
-    });
-    if (!isHttp){
-      list.push({
-        label: 'YouTube No-Cookie',
-        url: 'https://www.youtube-nocookie.com/embed/' + vid + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=1' + loopParam
-      });
-    }
-    return list;
+      },
+      {
+        label: 'YouTube Chuẩn',
+        url: 'https://www.youtube.com/embed/' + vid + '?autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=1' + originParams + loopParam
+      }
+    ];
   }
 
   function mountNoCookieIframe(video, srcIndex){
@@ -2646,7 +2655,7 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   const ffTab = document.getElementById('gsFocusTab');
 
   let gsMode = 'all';       // all | images | scholar | study
-  let gsEngine = 'google_tab';  // google_tab | native | cse
+  let gsEngine = 'native';  // native | google_tab | cse
   let gsRecent = [];
   let savedCx = '';
   let cseLoadedCx = '';
@@ -3135,11 +3144,14 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       try {
         if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.googleBrowser){
           window.webkit.messageHandlers.googleBrowser.postMessage({ action: 'open', url: url });
-          return true;
+          return 'native';
         }
       } catch(e){}
-      window.open(url, '_blank', 'noopener,noreferrer');
-      return false;
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (win) return 'popup';
+      // iOS WKWebView blocks window.open(_blank) by default -> navigate directly in-place
+      window.location.href = url;
+      return 'same';
     }
 
     if (gsEngine === 'google_tab'){
@@ -3147,13 +3159,8 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       if (gsMode === 'images') gUrl += '&tbm=isch';
       else if (gsMode === 'scholar') gUrl = 'https://scholar.google.com/scholar?hl=vi&q=' + encodeURIComponent(q);
       badge.textContent = 'Google';
-      metaLine.textContent = 'Đang mở trang Google thật cho "' + q + '"...';
+      metaLine.textContent = 'Đang mở Google cho "' + q + '"...';
       openNativeGoogle(gUrl);
-      // Also load quick preview for Focus Mode floating card in background
-      searchWiki(cleanImageQuery(q), 'vi').then(w => {
-        lastSearchState.items = w;
-        renderFocusSearchBody();
-      });
       return;
     }
 
@@ -3271,12 +3278,17 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   const openGoogleAppLink = document.getElementById('ghOpenGoogleApp');
   if (openGoogleAppLink){
     openGoogleAppLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const qVal = (input.value || '').trim();
+      const targetUrl = qVal ? ('https://www.google.com/search?hl=vi&q=' + encodeURIComponent(qVal)) : 'https://www.google.com/?hl=vi';
       try {
         if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.googleBrowser){
-          e.preventDefault();
-          window.webkit.messageHandlers.googleBrowser.postMessage({ action: 'open', url: 'https://www.google.com/?hl=vi' });
+          window.webkit.messageHandlers.googleBrowser.postMessage({ action: 'open', url: targetUrl });
+          return;
         }
       } catch(err){}
+      const w = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+      if (!w) window.location.href = targetUrl;
     });
   }
   const cseToggleBtn = document.getElementById('gsCseToggle');
