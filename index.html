@@ -265,6 +265,67 @@ html,body{overflow-x:hidden;max-width:100%}
   .wrap{padding:12px 12px calc(104px + env(safe-area-inset-bottom,0px))}
 }
 
+
+/* === 5-TAB MOBILE ALIGNMENT === */
+@media(max-width:720px){
+  .tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;padding:8px 2px;line-height:1.2}
+}
+/* === GOOGLE-STYLE SEARCH TAB === */
+.gs-brand{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.gs-logo{font-size:24px;font-weight:900;letter-spacing:-.5px;display:inline-flex;align-items:center;gap:1px}
+.gs-logo span:nth-child(1){color:#4285f4}
+.gs-logo span:nth-child(2){color:#ea4335}
+.gs-logo span:nth-child(3){color:#fbbc05}
+.gs-logo span:nth-child(4){color:#4285f4}
+.gs-logo span:nth-child(5){color:#34a853}
+.gs-logo span:nth-child(6){color:#ea4335}
+.gs-bar{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:5px 6px 5px 14px;transition:border-color .2s,box-shadow .2s}
+.gs-bar:focus-within{border-color:#4285f4;box-shadow:0 0 0 3px rgba(66,133,244,.22)}
+.gs-bar input{border:0;background:transparent;padding:8px 4px;font-size:16px;flex:1;min-width:0;border-radius:0}
+.gs-bar input:focus{border:0}
+.gs-clear{border:0;background:transparent;color:var(--muted);width:30px;height:30px;border-radius:999px;cursor:pointer;font-size:15px;display:none;place-items:center;flex-shrink:0}
+.gs-clear.show{display:grid}
+.gs-go{border:0;background:#4285f4;color:#fff;padding:9px 16px;border-radius:999px;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.gs-go:active{transform:scale(.97)}
+.gs-subtabs{display:flex;gap:14px;margin-top:12px;border-bottom:1px solid var(--line);overflow-x:auto;padding-bottom:2px}
+.gs-subtab{border:0;background:transparent;color:var(--muted);font-weight:700;font-size:13px;padding:8px 2px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.gs-subtab.active{color:#8ab4f8;border-bottom-color:#8ab4f8}
+[data-theme="light"] .gs-subtab.active{color:#1a73e8;border-bottom-color:#1a73e8}
+.gs-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.gs-chip{border:1px solid var(--line);background:var(--card2);color:var(--text);padding:6px 11px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer}
+.gs-chip:hover{border-color:#4285f4}
+.gs-ext-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.gs-ext-link{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:999px;background:var(--card2);border:1px solid var(--line);color:var(--text);text-decoration:none;font-size:12.5px;font-weight:700}
+.gs-ext-link:hover{border-color:#4285f4}
+.gs-calc{margin-top:14px;background:linear-gradient(135deg,rgba(66,133,244,.16),rgba(124,92,255,.14));border:1px solid rgba(66,133,244,.35);border-radius:18px;padding:14px 16px}
+.gs-calc-expr{font-size:13px;color:var(--muted)}
+.gs-calc-val{font-size:30px;font-weight:900;margin-top:4px;font-variant-numeric:tabular-nums}
+.gs-kp{margin-top:14px;background:var(--card2);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;gap:14px;align-items:flex-start}
+.gs-kp img{width:84px;height:84px;border-radius:12px;object-fit:cover;flex-shrink:0;background:#111}
+.gs-kp h4{font-size:17px;margin-bottom:4px}
+.gs-kp p{font-size:13.5px;color:var(--muted);line-height:1.55}
+.gs-results{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.gs-item{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:13px 14px;transition:border-color .18s}
+.gs-item:hover{border-color:#4285f4}
+.gs-site{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:4px;overflow:hidden}
+.gs-fav{width:18px;height:18px;border-radius:50%;background:var(--card);flex-shrink:0;object-fit:cover}
+.gs-url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs-title{display:inline-block;font-size:16px;font-weight:800;color:#8ab4f8;text-decoration:none;line-height:1.35;margin-bottom:4px}
+[data-theme="light"] .gs-title{color:#1a0dab}
+.gs-title:hover{text-decoration:underline}
+.gs-snip{font-size:13.5px;color:var(--muted);line-height:1.5}
+.gs-snip mark{background:rgba(66,133,244,.25);color:var(--text);padding:0 2px;border-radius:3px}
+.gs-item-acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.gs-mini-btn{border:1px solid var(--line);background:var(--card);color:var(--text);padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none}
+.gs-reader{margin-top:14px;background:var(--card2);border:1px solid var(--accent);border-radius:18px;padding:14px 16px;display:none}
+.gs-reader.open{display:block}
+.gs-reader-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.gs-reader-body{font-size:14px;line-height:1.65;color:var(--text);max-height:320px;overflow-y:auto}
+@media(max-width:540px){
+  .gs-kp{flex-direction:column}
+  .gs-kp img{width:100%;height:150px}
+}
+
 </style>
 </head>
 <body>
@@ -284,6 +345,7 @@ html,body{overflow-x:hidden;max-width:100%}
 <button class="tab" data-tab="stop">⏱ Bấm giờ</button>
 <button class="tab" data-tab="smart">🧠 Thông minh</button>
 <button class="tab" data-tab="yt">▶️ YouTube</button>
+<button class="tab" data-tab="search">🔍 Tìm kiếm</button>
 </div>
 
 <!-- COUNTDOWN -->
@@ -367,6 +429,62 @@ html,body{overflow-x:hidden;max-width:100%}
     <button type="button" class="btn btn-g" id="ytClearRecentBtn" style="padding:7px 12px;font-size:12px">Xóa lịch sử</button>
   </div>
   <div class="yt-grid" id="ytRecentGrid"></div>
+</div>
+</section>
+
+<!-- SEARCH (GOOGLE STYLE) -->
+<section id="tab-search" style="display:none">
+<div class="card">
+  <div class="gs-brand">
+    <div class="gs-logo" aria-label="Google Search">
+      <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+      <span style="font-size:13px;font-weight:700;color:var(--muted);margin-left:8px">Tìm kiếm nhanh</span>
+    </div>
+    <span class="badge" id="gsStatusBadge">Sẵn sàng</span>
+  </div>
+
+  <form id="gsForm" class="gs-bar">
+    <span style="font-size:16px;opacity:.75">🔍</span>
+    <input id="gsInput" type="search" autocomplete="off" placeholder="Tìm kiếm trên Google, tra công thức, phép tính...">
+    <button type="button" class="gs-clear" id="gsClearBtn" aria-label="Xóa từ khóa">✕</button>
+    <button type="submit" class="gs-go" id="gsGoBtn">Tìm</button>
+  </form>
+
+  <div class="gs-subtabs" id="gsSubtabs">
+    <button type="button" class="gs-subtab active" data-mode="all">Tất cả</button>
+    <button type="button" class="gs-subtab" data-mode="study">Học tập (Wiki)</button>
+    <button type="button" class="gs-subtab" data-mode="images">Hình ảnh</button>
+    <button type="button" class="gs-subtab" data-mode="news">Tin tức</button>
+    <button type="button" class="gs-subtab" data-mode="scholar">Học thuật</button>
+  </div>
+
+  <div class="gs-chips" id="gsChips">
+    <button type="button" class="gs-chip" data-q="Công thức lượng giác">📐 Công thức lượng giác</button>
+    <button type="button" class="gs-chip" data-q="Định luật Newton">⚛️ Định luật Newton</button>
+    <button type="button" class="gs-chip" data-q="12 thì trong tiếng Anh">🇬🇧 12 thì tiếng Anh</button>
+    <button type="button" class="gs-chip" data-q="Bảng tuần hoàn hóa học">🧪 Bảng tuần hoàn</button>
+    <button type="button" class="gs-chip" data-q="(25 * 48) + 120">🧮 Tính nhanh</button>
+  </div>
+
+  <div class="gs-ext-bar" id="gsExtBar" style="display:none"></div>
+  <div id="gsInstantBox"></div>
+  <div id="gsReader" class="gs-reader">
+    <div class="gs-reader-head">
+      <b id="gsReaderTitle">Xem nhanh</b>
+      <button type="button" class="gs-mini-btn" id="gsReaderClose">✕ Đóng</button>
+    </div>
+    <div class="gs-reader-body" id="gsReaderBody"></div>
+  </div>
+  <div class="hint" id="gsMetaLine" style="margin-top:10px">Nhập từ khóa giống trên Google để xem kết quả ngay trong app mà không mất giờ học.</div>
+  <div class="gs-results" id="gsResults"></div>
+</div>
+
+<div class="card" id="gsRecentCard" style="margin-top:14px;display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px">
+    <h3 style="margin:0">🕒 Tìm kiếm gần đây</h3>
+    <button type="button" class="btn btn-g" id="gsClearRecent" style="padding:7px 12px;font-size:12px">Xóa lịch sử</button>
+  </div>
+  <div class="gs-chips" id="gsRecentList" style="margin-top:0"></div>
 </div>
 </section>
 </div>
@@ -1105,7 +1223,7 @@ if(landscape){document.getElementById('rotateBtn').textContent='⟲ Xoay dọc l
 function beep(freq=880,dur=.35,type='sine'){try{const c=new (window.AudioContext||window.webkitAudioContext)();const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.25,c.currentTime+.02);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+dur);o.connect(g).connect(c.destination);o.start();o.stop(c.currentTime+dur);}catch(e){}}
 // Tabs
 let lastTimerTab='count';
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(['count','stop','smart'].includes(b.dataset.tab))lastTimerTab=b.dataset.tab;['count','stop','smart','yt'].forEach(t=>document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none');syncFocus()});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(['count','stop','smart'].includes(b.dataset.tab))lastTimerTab=b.dataset.tab;['count','stop','smart','yt','search'].forEach(t=>document.getElementById('tab-'+t).style.display=t===b.dataset.tab?'block':'none');syncFocus()});
 // COUNTDOWN
 let cTotal=25*60,cLeft=25*60,cRun=false,cTimer=null,cHistory=JSON.parse(localStorage.getItem('ft_hist')||'[]');
 function fmt(s){s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
@@ -2125,6 +2243,328 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 
   // Initial render
   renderCards(resultsEl, CURATED_VIDEOS);
+  renderRecent();
+})();
+</script>
+
+
+<script>
+/* ===== GOOGLE-STYLE SEARCH TAB ===== */
+(function(){
+  const SEARX_INSTANCES = [
+    'https://searx.be',
+    'https://search.sapti.me',
+    'https://priv.au'
+  ];
+
+  const form = document.getElementById('gsForm');
+  const input = document.getElementById('gsInput');
+  const clearBtn = document.getElementById('gsClearBtn');
+  const badge = document.getElementById('gsStatusBadge');
+  const extBar = document.getElementById('gsExtBar');
+  const instantBox = document.getElementById('gsInstantBox');
+  const metaLine = document.getElementById('gsMetaLine');
+  const resultsEl = document.getElementById('gsResults');
+  const recentCard = document.getElementById('gsRecentCard');
+  const recentList = document.getElementById('gsRecentList');
+  const clearRecentBtn = document.getElementById('gsClearRecent');
+  const readerEl = document.getElementById('gsReader');
+  const readerTitle = document.getElementById('gsReaderTitle');
+  const readerBody = document.getElementById('gsReaderBody');
+  const readerClose = document.getElementById('gsReaderClose');
+
+  let gsMode = 'all';
+  let gsRecent = [];
+  try { gsRecent = JSON.parse(localStorage.getItem('ft_search_recent') || '[]'); } catch(e){ gsRecent = []; }
+
+  function esc(s){
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function stripTags(s){
+    return String(s || '').replace(/<[^>]+>/g, '');
+  }
+  function highlightQuery(text, q){
+    let safe = esc(stripTags(text));
+    const words = (q || '').trim().split(/\s+/).filter(w => w.length >= 2).slice(0, 5);
+    words.forEach(w => {
+      const re = new RegExp('(' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      safe = safe.replace(re, '<mark>$1</mark>');
+    });
+    return safe;
+  }
+  function getDomain(url){
+    try { return new URL(url).hostname.replace(/^www\./, ''); } catch(e){ return 'web'; }
+  }
+  async function fetchJsonTimeout(url, ms){
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), ms || 3800);
+    try {
+      const r = await fetch(url, { signal: ctrl.signal });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return await r.json();
+    } finally {
+      clearTimeout(tid);
+    }
+  }
+
+  // Safe instant math evaluator (like Google Calculator)
+  function tryEvaluateMath(expr){
+    const cleaned = (expr || '').trim().replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.');
+    if (!cleaned || !/^[0-9+\-*/().%\s^]+$/.test(cleaned)) return null;
+    if (!/[+\-*/^%]/.test(cleaned)) return null;
+    try {
+      const jsExpr = cleaned.replace(/\^/g, '**');
+      const val = Function('"use strict";return (' + jsExpr + ')')();
+      if (typeof val === 'number' && isFinite(val)){
+        const rounded = Math.abs(val - Math.round(val)) < 1e-10 ? Math.round(val) : Number(val.toFixed(6));
+        return { expr: cleaned, value: rounded };
+      }
+    } catch(e){}
+    return null;
+  }
+
+  function saveRecent(q){
+    q = (q || '').trim();
+    if (!q) return;
+    gsRecent = [q].concat(gsRecent.filter(x => x.toLowerCase() !== q.toLowerCase())).slice(0, 8);
+    try { localStorage.setItem('ft_search_recent', JSON.stringify(gsRecent)); } catch(e){}
+    renderRecent();
+  }
+
+  function renderRecent(){
+    if (!gsRecent.length){ recentCard.style.display = 'none'; return; }
+    recentCard.style.display = 'block';
+    recentList.innerHTML = gsRecent.map(q => '<button type="button" class="gs-chip" data-rq="' + esc(q) + '">🕘 ' + esc(q) + '</button>').join('');
+    recentList.querySelectorAll('[data-rq]').forEach(b => {
+      b.addEventListener('click', () => {
+        input.value = b.dataset.rq;
+        updateClearBtn();
+        doSearch(b.dataset.rq);
+      });
+    });
+  }
+
+  function updateClearBtn(){
+    clearBtn.classList.toggle('show', input.value.length > 0);
+  }
+
+  function renderExternalBar(q){
+    const enc = encodeURIComponent(q);
+    extBar.style.display = 'flex';
+    extBar.innerHTML =
+      '<a class="gs-ext-link" href="https://www.google.com/search?q=' + enc + '" target="_blank" rel="noopener noreferrer">🌐 Mở trên Google ↗</a>'
+      + '<a class="gs-ext-link" href="https://www.google.com/search?tbm=isch&q=' + enc + '" target="_blank" rel="noopener noreferrer">🖼️ Google Hình ảnh ↗</a>'
+      + '<a class="gs-ext-link" href="https://www.google.com/search?tbm=nws&q=' + enc + '" target="_blank" rel="noopener noreferrer">📰 Tin tức ↗</a>'
+      + '<a class="gs-ext-link" href="https://scholar.google.com/scholar?q=' + enc + '" target="_blank" rel="noopener noreferrer">🎓 Google Scholar ↗</a>';
+  }
+
+  async function searchWiki(q, lang){
+    try {
+      const url = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&list=search&srlimit=8&utf8=1&format=json&origin=*&srsearch=' + encodeURIComponent(q);
+      const data = await fetchJsonTimeout(url, 4000);
+      const list = (data && data.query && data.query.search) ? data.query.search : [];
+      return list.map(it => ({
+        title: it.title,
+        url: 'https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent(it.title.replace(/ /g, '_')),
+        snippet: stripTags(it.snippet || ''),
+        source: lang + '.wikipedia.org',
+        wikiLang: lang,
+        wikiTitle: it.title
+      }));
+    } catch(e){
+      return [];
+    }
+  }
+
+  async function fetchWikiSummary(lang, title){
+    try {
+      const url = 'https://' + lang + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title.replace(/ /g, '_'));
+      const data = await fetchJsonTimeout(url, 3500);
+      if (data && data.extract){
+        return {
+          title: data.title || title,
+          extract: data.extract,
+          thumb: data.thumbnail ? data.thumbnail.source : '',
+          url: (data.content_urls && data.content_urls.desktop) ? data.content_urls.desktop.page : ('https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent(title.replace(/ /g, '_')))
+        };
+      }
+    } catch(e){}
+    return null;
+  }
+
+  async function searchWebEngines(q){
+    const enc = encodeURIComponent(q);
+    for (let i = 0; i < SEARX_INSTANCES.length; i++){
+      try {
+        const cat = gsMode === 'news' ? '&categories=news' : (gsMode === 'images' ? '&categories=images' : '');
+        const data = await fetchJsonTimeout(SEARX_INSTANCES[i] + '/search?q=' + enc + '&format=json&language=vi-VN' + cat, 3500);
+        if (data && Array.isArray(data.results) && data.results.length){
+          return data.results.filter(r => r && r.url && r.title).slice(0, 12).map(r => ({
+            title: r.title,
+            url: r.url,
+            snippet: r.content || '',
+            source: getDomain(r.url)
+          }));
+        }
+      } catch(e){}
+    }
+    return [];
+  }
+
+  async function searchDDG(q){
+    try {
+      const data = await fetchJsonTimeout('https://api.duckduckgo.com/?q=' + encodeURIComponent(q) + '&format=json&no_html=1&skip_disambig=1', 3500);
+      const out = [];
+      if (data && data.AbstractText && data.AbstractURL){
+        out.push({ title: data.Heading || q, url: data.AbstractURL, snippet: data.AbstractText, source: getDomain(data.AbstractURL) });
+      }
+      if (data && Array.isArray(data.RelatedTopics)){
+        data.RelatedTopics.forEach(t => {
+          if (t && t.FirstURL && t.Text){
+            const parts = t.Text.split(' - ');
+            out.push({ title: parts[0], url: t.FirstURL, snippet: t.Text, source: getDomain(t.FirstURL) });
+          }
+        });
+      }
+      return out.slice(0, 6);
+    } catch(e){
+      return [];
+    }
+  }
+
+  async function openQuickRead(lang, title){
+    readerEl.classList.add('open');
+    readerTitle.textContent = title;
+    readerBody.innerHTML = '<p class="hint">Đang tải tóm tắt nhanh...</p>';
+    const sum = await fetchWikiSummary(lang, title);
+    if (sum){
+      readerBody.innerHTML = '<p>' + esc(sum.extract) + '</p><p style="margin-top:10px"><a href="' + esc(sum.url) + '" target="_blank" rel="noopener noreferrer">Đọc bài đầy đủ ↗</a></p>';
+    } else {
+      readerBody.innerHTML = '<p class="hint">Không tải được tóm tắt. Bạn có thể bấm thẳng vào tiêu đề để mở bài gốc.</p>';
+    }
+  }
+
+  function renderResultsList(items, q){
+    if (!items.length){
+      resultsEl.innerHTML = '<div class="gs-item"><div class="gs-snip">Không tải được kết quả trực tiếp cho "<b>' + esc(q) + '</b>". Bạn bấm nút <b>🌐 Mở trên Google ↗</b> ở trên để xem ngay trên Google.</div></div>';
+      return;
+    }
+    resultsEl.innerHTML = items.map((it, idx) => {
+      const domain = it.source || getDomain(it.url);
+      const fav = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(domain) + '&sz=32';
+      const quickBtn = it.wikiLang
+        ? '<button type="button" class="gs-mini-btn" data-qr-lang="' + esc(it.wikiLang) + '" data-qr-title="' + esc(it.wikiTitle) + '">📖 Xem nhanh tại đây</button>'
+        : '';
+      return '<article class="gs-item">'
+        + '<div class="gs-site"><img class="gs-fav" src="' + esc(fav) + '" alt=""><span class="gs-url">' + esc(domain) + '</span></div>'
+        + '<a class="gs-title" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">' + esc(it.title) + '</a>'
+        + '<div class="gs-snip">' + highlightQuery(it.snippet || it.url, q) + '</div>'
+        + '<div class="gs-item-acts">' + quickBtn
+        + '<a class="gs-mini-btn" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">Mở trang ↗</a></div>'
+        + '</article>';
+    }).join('');
+
+    resultsEl.querySelectorAll('[data-qr-lang]').forEach(btn => {
+      btn.addEventListener('click', () => openQuickRead(btn.dataset.qrLang, btn.dataset.qrTitle));
+    });
+  }
+
+  async function doSearch(raw){
+    const q = (raw || '').trim();
+    if (!q) return;
+    saveRecent(q);
+    readerEl.classList.remove('open');
+    renderExternalBar(q);
+    instantBox.innerHTML = '';
+    badge.textContent = 'Đang tìm...';
+    badge.classList.add('on');
+    metaLine.textContent = 'Đang tìm kết quả cho "' + q + '"...';
+    resultsEl.innerHTML = '';
+
+    // 1. Instant Calculator card (like Google)
+    const calc = tryEvaluateMath(q);
+    if (calc){
+      instantBox.innerHTML = '<div class="gs-calc"><div class="gs-calc-expr">' + esc(calc.expr) + ' =</div><div class="gs-calc-val">' + esc(calc.value) + '</div></div>';
+    }
+
+    // 2. If user explicitly picked Images / News / Scholar, still fetch relevant summaries + offer 1-tap Google tab
+    const t0 = performance.now();
+    const tasks = [searchWiki(q, 'vi')];
+    if (gsMode !== 'study') tasks.push(searchWebEngines(q));
+    tasks.push(searchDDG(q));
+
+    const settled = await Promise.all(tasks);
+    const wikiVi = settled[0] || [];
+    const webRes = gsMode !== 'study' ? (settled[1] || []) : [];
+    const ddgRes = gsMode !== 'study' ? (settled[2] || []) : (settled[1] || []);
+
+    let wikiEn = [];
+    if (wikiVi.length < 3) wikiEn = await searchWiki(q, 'en');
+
+    // Knowledge Panel from top Wikipedia hit
+    const topWiki = wikiVi[0] || wikiEn[0];
+    if (topWiki){
+      const kp = await fetchWikiSummary(topWiki.wikiLang, topWiki.wikiTitle);
+      if (kp){
+        const kpHtml = '<div class="gs-kp">'
+          + (kp.thumb ? '<img src="' + esc(kp.thumb) + '" alt="">' : '')
+          + '<div><h4>' + esc(kp.title) + '</h4><p>' + esc(kp.extract) + '</p>'
+          + '<div style="margin-top:8px"><a class="gs-mini-btn" href="' + esc(kp.url) + '" target="_blank" rel="noopener noreferrer">Wikipedia ↗</a></div></div></div>';
+        instantBox.innerHTML += kpHtml;
+      }
+    }
+
+    // Merge & deduplicate results (Web first if All/News, Wiki first if Study)
+    const mergedRaw = gsMode === 'study'
+      ? [].concat(wikiVi, wikiEn, ddgRes)
+      : [].concat(webRes, wikiVi, ddgRes, wikiEn);
+    const seen = new Set();
+    const merged = [];
+    mergedRaw.forEach(item => {
+      if (!item || !item.url || seen.has(item.url)) return;
+      seen.add(item.url);
+      merged.push(item);
+    });
+
+    const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+    badge.textContent = merged.length ? (merged.length + ' kết quả') : 'Mở Google';
+    badge.classList.remove('on');
+    metaLine.textContent = 'Khoảng ' + merged.length + ' kết quả trực tiếp (' + elapsed + ' giây) cho "' + q + '"';
+    renderResultsList(merged.slice(0, 12), q);
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    doSearch(input.value);
+  });
+  input.addEventListener('input', updateClearBtn);
+  clearBtn.addEventListener('click', () => {
+    input.value = '';
+    updateClearBtn();
+    input.focus();
+  });
+  document.querySelectorAll('#gsSubtabs .gs-subtab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#gsSubtabs .gs-subtab').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      gsMode = btn.dataset.mode || 'all';
+      if (input.value.trim()) doSearch(input.value);
+    });
+  });
+  document.querySelectorAll('#gsChips .gs-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      input.value = chip.dataset.q || '';
+      updateClearBtn();
+      doSearch(input.value);
+    });
+  });
+  clearRecentBtn.addEventListener('click', () => {
+    gsRecent = [];
+    try { localStorage.removeItem('ft_search_recent'); } catch(e){}
+    renderRecent();
+  });
+  readerClose.addEventListener('click', () => readerEl.classList.remove('open'));
+
   renderRecent();
 })();
 </script>
