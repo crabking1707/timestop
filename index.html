@@ -450,6 +450,35 @@ html,body{overflow-x:hidden;max-width:100%}
   .gs-focus-tab{height:68px;bottom:48px}
 }
 
+
+/* === REAL EMBEDDED GOOGLE / BING SEARCH FRAME === */
+.gs-engine-row{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px}
+.gs-eng-pills{display:flex;gap:6px;flex-wrap:wrap}
+.gs-eng-pill{border:1px solid var(--line);background:var(--card2);color:var(--muted);padding:5px 11px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer}
+.gs-eng-pill.active{background:#4285f4;color:#fff;border-color:#4285f4}
+.gs-frame-wrap{
+  margin-top:12px;
+  width:100%;
+  height:min(74vh,680px);
+  min-height:420px;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:#11131a;
+  position:relative;
+  display:none;
+}
+.gs-frame-wrap.open{display:block}
+.gs-frame-wrap iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+.gs-cse-box{margin-top:10px;padding:10px 12px;background:var(--card2);border:1px solid var(--line);border-radius:14px;display:none;gap:8px;align-items:center;flex-wrap:wrap}
+.gs-cse-box.open{display:flex}
+.gs-cse-box input{flex:1;min-width:160px;padding:8px 10px;font-size:13px}
+.gs-cse-host{margin-top:12px;border-radius:16px;overflow:hidden;background:#fff;color:#111;padding:6px;display:none}
+.gs-cse-host.open{display:block}
+.gs-ff-frame{width:100%;height:100%;min-height:150px;border:0;display:block;background:#fff}
+.gs-focus-float{max-height:min(240px,52vh)}
+.gs-ff-body.frame-mode{padding:0;overflow:hidden}
+
 </style>
 </head>
 <body>
@@ -562,43 +591,61 @@ html,body{overflow-x:hidden;max-width:100%}
   <div class="gs-brand">
     <div class="gs-logo" aria-label="Google Search">
       <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
-      <span style="font-size:13px;font-weight:700;color:var(--muted);margin-left:8px">Tìm kiếm nhanh</span>
+      <span style="font-size:13px;font-weight:700;color:var(--muted);margin-left:8px">Tìm kiếm trực tiếp</span>
     </div>
-    <span class="badge" id="gsStatusBadge">Sẵn sàng</span>
+    <span class="badge" id="gsStatusBadge">Google</span>
   </div>
 
   <form id="gsForm" class="gs-bar">
     <span style="font-size:16px;opacity:.75">🔍</span>
-    <input id="gsInput" type="search" autocomplete="off" placeholder="Tìm kiếm trên Google, tra công thức, phép tính...">
+    <input id="gsInput" type="search" autocomplete="off" placeholder="Tìm kiếm trên Google...">
     <button type="button" class="gs-clear" id="gsClearBtn" aria-label="Xóa từ khóa">✕</button>
     <button type="submit" class="gs-go" id="gsGoBtn">Tìm</button>
   </form>
 
   <div class="gs-subtabs" id="gsSubtabs">
     <button type="button" class="gs-subtab active" data-mode="all">Tất cả</button>
-    <button type="button" class="gs-subtab" data-mode="study">Học tập (Wiki)</button>
     <button type="button" class="gs-subtab" data-mode="images">Hình ảnh</button>
+    <button type="button" class="gs-subtab" data-mode="videos">Video</button>
     <button type="button" class="gs-subtab" data-mode="news">Tin tức</button>
-    <button type="button" class="gs-subtab" data-mode="scholar">Học thuật</button>
+  </div>
+
+  <div class="gs-engine-row">
+    <div class="gs-eng-pills" id="gsEngPills">
+      <button type="button" class="gs-eng-pill active" data-eng="google">Google</button>
+      <button type="button" class="gs-eng-pill" data-eng="bing">Bing (dự phòng)</button>
+      <button type="button" class="gs-eng-pill" data-eng="cse" id="gsCseToggle">⚙️ Google CSE</button>
+    </div>
+    <span class="hint" id="gsMetaLine" style="font-size:12px">Nhập từ khóa để tìm trực tiếp như trên Google.</span>
+  </div>
+
+  <div class="gs-cse-box" id="gsCseBox">
+    <input id="gsCseInput" type="text" placeholder="Dán mã CX từ programmablesearchengine.google.com (tùy chọn)">
+    <button type="button" class="btn btn-p" id="gsCseSave" style="padding:8px 14px;font-size:13px">Lưu CX</button>
   </div>
 
   <div class="gs-chips" id="gsChips">
+    <button type="button" class="gs-chip" data-q="12 thì trong tiếng Anh">🇬🇧 12 thì trong tiếng Anh</button>
     <button type="button" class="gs-chip" data-q="Công thức lượng giác">📐 Công thức lượng giác</button>
     <button type="button" class="gs-chip" data-q="Định luật Newton">⚛️ Định luật Newton</button>
-    <button type="button" class="gs-chip" data-q="12 thì trong tiếng Anh">🇬🇧 12 thì tiếng Anh</button>
     <button type="button" class="gs-chip" data-q="Bảng tuần hoàn hóa học">🧪 Bảng tuần hoàn</button>
     <button type="button" class="gs-chip" data-q="(25 * 48) + 120">🧮 Tính nhanh</button>
   </div>
 
   <div id="gsInstantBox"></div>
-  <div id="gsReader" class="gs-reader">
+
+  <div class="gs-frame-wrap" id="gsFrameWrap">
+    <iframe id="gsFrame" title="Kết quả tìm kiếm" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen"></iframe>
+  </div>
+  <div class="gs-cse-host" id="gsCseHost"></div>
+
+  <div id="gsReader" class="gs-reader" style="display:none">
     <div class="gs-reader-head">
       <b id="gsReaderTitle">Xem nhanh</b>
       <button type="button" class="gs-mini-btn" id="gsReaderClose">✕ Đóng</button>
     </div>
     <div class="gs-reader-body" id="gsReaderBody"></div>
   </div>
-  <div class="hint" id="gsMetaLine" style="margin-top:10px">Nhập từ khóa giống trên Google để xem kết quả ngay trong app mà không mất giờ học.</div>
   <div class="gs-results" id="gsResults"></div>
 </div>
 
@@ -2402,38 +2449,28 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 
 
 <script>
-/* ===== GOOGLE-STYLE SEARCH TAB (MULTI-WEB + IMAGES + FOCUS MODE SWIPE-IN CARD) ===== */
+/* ===== REAL GOOGLE / BING EMBEDDED SEARCH + FOCUS MODE SWIPE-IN FRAME ===== */
 (function(){
-  const SEARX_INSTANCES = [
-    'https://searx.be',
-    'https://search.sapti.me',
-    'https://priv.au'
-  ];
-  const CORS_PROXIES = [
-    u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-    u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
-    u => 'https://corsproxy.io/?url=' + encodeURIComponent(u)
-  ];
-
   const form = document.getElementById('gsForm');
   const input = document.getElementById('gsInput');
   const clearBtn = document.getElementById('gsClearBtn');
   const badge = document.getElementById('gsStatusBadge');
   const instantBox = document.getElementById('gsInstantBox');
   const metaLine = document.getElementById('gsMetaLine');
-  const resultsEl = document.getElementById('gsResults');
+  const frameWrap = document.getElementById('gsFrameWrap');
+  const frameEl = document.getElementById('gsFrame');
+  const cseBox = document.getElementById('gsCseBox');
+  const cseInput = document.getElementById('gsCseInput');
+  const cseSave = document.getElementById('gsCseSave');
+  const cseHost = document.getElementById('gsCseHost');
   const recentCard = document.getElementById('gsRecentCard');
   const recentList = document.getElementById('gsRecentList');
   const clearRecentBtn = document.getElementById('gsClearRecent');
   const readerEl = document.getElementById('gsReader');
-  const readerTitle = document.getElementById('gsReaderTitle');
-  const readerBody = document.getElementById('gsReaderBody');
   const readerClose = document.getElementById('gsReaderClose');
 
   const lbEl = document.getElementById('gsLightbox');
   const lbImg = document.getElementById('gsLbImg');
-  const lbTitle = document.getElementById('gsLbTitle');
-  const lbOpen = document.getElementById('gsLbOpen');
   const lbClose = document.getElementById('gsLbClose');
 
   // Focus Mode floating search card + left-edge tuck tab
@@ -2444,73 +2481,30 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   const ffTuckBtn = document.getElementById('gsFocusTuckBtn');
   const ffTab = document.getElementById('gsFocusTab');
 
-  let gsMode = 'all';
+  let gsMode = 'all';     // all | images | videos | news
+  let gsEngine = 'google'; // google | bing | cse
   let gsRecent = [];
-  let lastSearchState = { query: '', mode: 'all', calc: null, items: [], imgs: [] };
+  let savedCx = '';
+  let lastQuery = '';
+  let lastUrl = '';
   let ffTucked = false;
+  let cseLoadedCx = '';
+
   try { gsRecent = JSON.parse(localStorage.getItem('ft_search_recent') || '[]'); } catch(e){ gsRecent = []; }
+  try { savedCx = localStorage.getItem('ft_google_cx') || ''; } catch(e){ savedCx = ''; }
+  if (savedCx && cseInput) cseInput.value = savedCx;
 
   function esc(s){
     return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
-  function stripTags(s){
-    return String(s || '').replace(/<[^>]+>/g, '');
-  }
-  function highlightQuery(text, q){
-    let safe = esc(stripTags(text));
-    const words = (q || '').trim().split(/\s+/).filter(w => w.length >= 2).slice(0, 5);
-    words.forEach(w => {
-      const re = new RegExp('(' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-      safe = safe.replace(re, '<mark>$1</mark>');
-    });
-    return safe;
-  }
-  function getDomain(url){
-    try { return new URL(url).hostname.replace(/^www\./, ''); } catch(e){ return 'web'; }
-  }
-  function cleanImageQuery(q){
-    return (q || '').trim()
-      .replace(/^(hình\s*ảnh|hinh\s*anh|ảnh|anh|hình|hinh)\s+/i, '')
-      .trim() || (q || '').trim();
-  }
-  async function fetchWithTimeout(url, ms){
-    const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), ms || 4500);
-    try {
-      const r = await fetch(url, { signal: ctrl.signal });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r;
-    } finally {
-      clearTimeout(tid);
-    }
-  }
-  async function fetchJsonTimeout(url, ms){
-    const r = await fetchWithTimeout(url, ms);
-    return await r.json();
-  }
-  async function fetchTextViaProxy(targetUrl, ms){
-    for (let i = 0; i < CORS_PROXIES.length; i++){
-      try {
-        const r = await fetchWithTimeout(CORS_PROXIES[i](targetUrl), ms || 4800);
-        const txt = await r.text();
-        if (txt && txt.length > 200) return txt;
-      } catch(e){}
-    }
-    return '';
-  }
 
-  function openLightbox(imgUrl, title, pageUrl){
-    lbImg.src = imgUrl;
-    lbTitle.textContent = title || 'Hình ảnh';
-    lbOpen.href = pageUrl || imgUrl;
-    lbEl.classList.add('open');
-  }
   function closeLightbox(){
-    lbEl.classList.remove('open');
-    lbImg.src = '';
+    if (lbEl) lbEl.classList.remove('open');
+    if (lbImg) lbImg.src = '';
   }
-  lbClose.addEventListener('click', closeLightbox);
-  lbEl.addEventListener('click', (e) => { if (e.target === lbEl) closeLightbox(); });
+  if (lbClose) lbClose.addEventListener('click', closeLightbox);
+  if (lbEl) lbEl.addEventListener('click', (e) => { if (e.target === lbEl) closeLightbox(); });
+  if (readerClose) readerClose.addEventListener('click', () => { if (readerEl) readerEl.style.display = 'none'; });
 
   function tryEvaluateMath(expr){
     const cleaned = (expr || '').trim().replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.');
@@ -2552,372 +2546,73 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     clearBtn.classList.toggle('show', input.value.length > 0);
   }
 
-  // ===== REAL MULTI-WEBSITE SEARCH ENGINES (NOT JUST WIKI!) =====
-  function unwrapDdgHref(href){
-    if (!href) return '';
-    try {
-      if (href.includes('uddg=')){
-        const m = href.match(/uddg=([^&]+)/);
-        if (m) return decodeURIComponent(m[1]);
-      }
-      if (href.startsWith('//')) return 'https:' + href;
-      if (href.startsWith('http')) return href;
-    } catch(e){}
-    return '';
-  }
-
-  // 1. DuckDuckGo HTML (real Vietnamese & global web results: VietJack, Zim, VnExpress, Loigiaihay, etc.)
-  async function searchDuckDuckGoWeb(q){
-    try {
-      const target = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(q) + '&kl=vn-vi';
-      const htmlText = await fetchTextViaProxy(target, 5200);
-      if (!htmlText) return [];
-      const doc = new DOMParser().parseFromString(htmlText, 'text/html');
-      const nodes = doc.querySelectorAll('.result, .web-result');
-      const out = [];
-      nodes.forEach(node => {
-        const a = node.querySelector('a.result__a');
-        if (!a) return;
-        const url = unwrapDdgHref(a.getAttribute('href') || '');
-        if (!url || url.includes('duckduckgo.com/y.js')) return;
-        const title = (a.textContent || '').trim();
-        const snipEl = node.querySelector('.result__snippet');
-        const snippet = snipEl ? (snipEl.textContent || '').trim() : '';
-        if (title){
-          out.push({ title, url, snippet, thumb: '', source: getDomain(url) });
-        }
-      });
-      return out.slice(0, 12);
-    } catch(e){ return []; }
-  }
-
-  // 2. Google News RSS (real Vietnamese news & article sites: VnExpress, TuoiTre, DanTri, etc.)
-  async function searchNewsRss(q){
-    try {
-      const target = 'https://news.google.com/rss/search?q=' + encodeURIComponent(q) + '&hl=vi&gl=VN&ceid=VN:vi';
-      const xmlText = await fetchTextViaProxy(target, 4800);
-      if (!xmlText) return [];
-      const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
-      const items = doc.querySelectorAll('item');
-      const out = [];
-      items.forEach(it => {
-        const title = (it.querySelector('title')?.textContent || '').trim();
-        const link = (it.querySelector('link')?.textContent || '').trim();
-        const src = (it.querySelector('source')?.textContent || '').trim();
-        const desc = stripTags(it.querySelector('description')?.textContent || '').trim();
-        const pub = (it.querySelector('pubDate')?.textContent || '').trim();
-        if (title && link){
-          out.push({
-            title,
-            url: link,
-            snippet: desc || (src + (pub ? ' • ' + pub.slice(0, 16) : '')),
-            thumb: '',
-            source: src || 'Tin tức'
-          });
-        }
-      });
-      return out.slice(0, 10);
-    } catch(e){ return []; }
-  }
-
-  // 3. OpenAlex Academic Search (100% native CORS, real papers & articles for Scholar mode)
-  async function searchScholarApi(q){
-    try {
-      const url = 'https://api.openalex.org/works?search=' + encodeURIComponent(q) + '&per-page=10';
-      const data = await fetchJsonTimeout(url, 4500);
-      const list = (data && Array.isArray(data.results)) ? data.results : [];
-      return list.filter(w => w && w.title).map(w => {
-        const link = w.doi || (w.primary_location && w.primary_location.landing_page_url) || w.id;
-        const authors = (w.authorships || []).slice(0, 3).map(a => a.author && a.author.display_name).filter(Boolean).join(', ');
-        const venue = (w.primary_location && w.primary_location.source && w.primary_location.source.display_name) || '';
-        return {
-          title: w.title,
-          url: link,
-          snippet: [authors, w.publication_year, venue, (w.cited_by_count ? (w.cited_by_count + ' trích dẫn') : '')].filter(Boolean).join(' • '),
-          thumb: '',
-          source: getDomain(link)
-        };
-      });
-    } catch(e){ return []; }
-  }
-
-  // 4. Reddit Web Posts (100% native CORS, real discussions & study guides)
-  async function searchRedditWeb(q){
-    try {
-      const data = await fetchJsonTimeout('https://www.reddit.com/search.json?q=' + encodeURIComponent(q) + '&limit=8&include_over_18=0&sort=relevance', 4000);
-      const children = (data && data.data && Array.isArray(data.data.children)) ? data.data.children : [];
-      return children.filter(ch => ch && ch.data && !ch.data.over_18 && ch.data.title).map(ch => {
-        const d = ch.data;
-        const thumb = (d.thumbnail && d.thumbnail.startsWith('http')) ? d.thumbnail : '';
-        return {
-          title: d.title,
-          url: 'https://www.reddit.com' + (d.permalink || ''),
-          snippet: (d.selftext ? d.selftext.slice(0, 170) : ('r/' + d.subreddit + ' • ' + (d.num_comments || 0) + ' bình luận')),
-          thumb: thumb,
-          source: 'reddit.com/r/' + (d.subreddit || '')
-        };
-      }).slice(0, 5);
-    } catch(e){ return []; }
-  }
-
-  // 5. SearXNG backup
-  async function searchWebEngines(q){
+  function buildSearchUrl(q, mode, eng){
     const enc = encodeURIComponent(q);
-    for (let i = 0; i < SEARX_INSTANCES.length; i++){
-      try {
-        const cat = gsMode === 'news' ? '&categories=news' : '';
-        const data = await fetchJsonTimeout(SEARX_INSTANCES[i] + '/search?q=' + enc + '&format=json&language=vi-VN' + cat, 3200);
-        if (data && Array.isArray(data.results) && data.results.length){
-          return data.results.filter(r => r && r.url && r.title).slice(0, 12).map(r => ({
-            title: r.title,
-            url: r.url,
-            snippet: r.content || '',
-            thumb: r.img_src || r.thumbnail || '',
-            source: getDomain(r.url)
-          }));
-        }
-      } catch(e){}
+    if (eng === 'bing'){
+      if (mode === 'images') return 'https://www.bing.com/images/search?q=' + enc + '&setlang=vi';
+      if (mode === 'videos') return 'https://www.bing.com/videos/search?q=' + enc + '&setlang=vi';
+      if (mode === 'news') return 'https://www.bing.com/news/search?q=' + enc + '&setlang=vi';
+      return 'https://www.bing.com/search?q=' + enc + '&setlang=vi';
     }
-    return [];
+    // Google embeddable search URL (igu=1 renders real Google Search SERP & Images inside iframe)
+    let tbm = '';
+    if (mode === 'images') tbm = '&tbm=isch';
+    else if (mode === 'videos') tbm = '&tbm=vid';
+    else if (mode === 'news') tbm = '&tbm=nws';
+    return 'https://www.google.com/search?igu=1&hl=vi&gl=vn&q=' + enc + tbm;
   }
 
-  // 6. Real In-App Image Search Sources
-  async function searchOpenverseImages(q){
-    try {
-      const url = 'https://api.openverse.org/v1/images/?q=' + encodeURIComponent(q) + '&page_size=18';
-      const data = await fetchJsonTimeout(url, 4200);
-      const list = (data && Array.isArray(data.results)) ? data.results : [];
-      return list.filter(it => it && (it.thumbnail || it.url)).map(it => ({
-        thumb: it.thumbnail || it.url,
-        full: it.url || it.thumbnail,
-        title: it.title || q,
-        source: it.source || getDomain(it.foreign_landing_url || it.url),
-        pageUrl: it.foreign_landing_url || it.url
-      }));
-    } catch(e){ return []; }
-  }
-
-  async function searchCommonsImages(q){
-    try {
-      const url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch='
-        + encodeURIComponent(q) + '&gsrlimit=16&prop=imageinfo&iiprop=url&iiurlwidth=480&format=json&origin=*';
-      const data = await fetchJsonTimeout(url, 4200);
-      const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
-      const out = [];
-      pages.forEach(p => {
-        const info = p && p.imageinfo && p.imageinfo[0];
-        if (!info) return;
-        const thumb = info.thumburl || info.url;
-        if (!thumb || /\.(svg|ogg|ogv|webm|pdf|tif|tiff|djvu)$/i.test(info.url || '')) return;
-        out.push({
-          thumb: thumb,
-          full: info.url || thumb,
-          title: (p.title || '').replace(/^File:/i, '').replace(/\.[^.]+$/, '').replace(/_/g, ' '),
-          source: 'Wikimedia Commons',
-          pageUrl: info.descriptionurl || info.url
-        });
-      });
-      return out;
-    } catch(e){ return []; }
-  }
-
-  async function searchRedditImages(q){
-    try {
-      const url = 'https://www.reddit.com/search.json?q=' + encodeURIComponent(q) + '&limit=24&include_over_18=0&sort=relevance';
-      const data = await fetchJsonTimeout(url, 4000);
-      const children = (data && data.data && Array.isArray(data.data.children)) ? data.data.children : [];
-      const out = [];
-      children.forEach(ch => {
-        const d = ch && ch.data;
-        if (!d || d.over_18) return;
-        let img = '';
-        if (d.url_overridden_by_dest && /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(d.url_overridden_by_dest)){
-          img = d.url_overridden_by_dest;
-        } else if (d.preview && d.preview.images && d.preview.images[0] && d.preview.images[0].source && d.preview.images[0].source.url){
-          img = d.preview.images[0].source.url.replace(/&amp;/g, '&');
-        }
-        if (!img || !img.startsWith('http')) return;
-        out.push({
-          thumb: img,
-          full: img,
-          title: d.title || q,
-          source: 'r/' + (d.subreddit || 'reddit'),
-          pageUrl: 'https://www.reddit.com' + (d.permalink || '')
-        });
-      });
-      return out;
-    } catch(e){ return []; }
-  }
-
-  async function searchWikiPageImages(q, lang){
-    try {
-      const url = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='
-        + encodeURIComponent(q) + '&gsrlimit=10&prop=pageimages|info&inprop=url&piprop=thumbnail|original&pithumbsize=480&format=json&origin=*';
-      const data = await fetchJsonTimeout(url, 4000);
-      const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
-      return pages.filter(p => p && p.thumbnail && p.thumbnail.source).map(p => ({
-        thumb: p.thumbnail.source,
-        full: (p.original && p.original.source) ? p.original.source : p.thumbnail.source,
-        title: p.title || q,
-        source: lang + '.wikipedia.org',
-        pageUrl: p.fullurl || ('https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent((p.title || '').replace(/ /g, '_')))
-      }));
-    } catch(e){ return []; }
-  }
-
-  async function fetchAllImages(rawQ){
-    const qClean = cleanImageQuery(rawQ);
-    const settled = await Promise.all([
-      searchRedditImages(qClean),
-      searchOpenverseImages(qClean),
-      searchCommonsImages(qClean),
-      searchWikiPageImages(qClean, 'vi'),
-      searchWikiPageImages(qClean, 'en')
-    ]);
-    const combined = [].concat(settled[0], settled[1], settled[2], settled[3], settled[4]);
-    const seen = new Set();
-    const out = [];
-    combined.forEach(it => {
-      if (!it || !it.thumb || seen.has(it.thumb)) return;
-      seen.add(it.thumb);
-      out.push(it);
-    });
-    return out.slice(0, 30);
-  }
-
-  function renderImageCards(container, imgs, isStrip){
-    const cls = isStrip ? 'gs-img-strip' : 'gs-img-grid';
-    container.innerHTML = '<div class="' + cls + '">' + imgs.map((im, idx) =>
-      '<button type="button" class="gs-img-card" data-im-idx="' + idx + '">'
-      + '<div class="gs-img-box"><img loading="lazy" referrerpolicy="no-referrer" src="' + esc(im.thumb) + '" alt="' + esc(im.title) + '"></div>'
-      + '<div class="gs-img-cap">' + esc(im.title) + '</div>'
-      + '<div class="gs-img-src">' + esc(im.source) + '</div>'
-      + '</button>'
-    ).join('') + '</div>';
-
-    container.querySelectorAll('.gs-img-card').forEach(card => {
-      const idx = Number(card.dataset.imIdx);
-      const im = imgs[idx];
-      const imgTag = card.querySelector('img');
-      if (imgTag) imgTag.addEventListener('error', () => { card.style.display = 'none'; });
-      card.addEventListener('click', () => { if (im) openLightbox(im.full || im.thumb, im.title, im.pageUrl); });
-    });
-  }
-
-  async function searchWiki(q, lang){
-    try {
-      const url = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='
-        + encodeURIComponent(q) + '&gsrlimit=6&prop=pageimages|extracts|info&inprop=url&piprop=thumbnail&pithumbsize=240&exintro=1&explaintext=1&exchars=180&format=json&origin=*';
-      const data = await fetchJsonTimeout(url, 4000);
-      const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
-      pages.sort((a,b) => (a.index || 99) - (b.index || 99));
-      return pages.map(it => ({
-        title: it.title,
-        url: it.fullurl || ('https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent((it.title || '').replace(/ /g, '_'))),
-        snippet: stripTags(it.extract || ''),
-        thumb: it.thumbnail ? it.thumbnail.source : '',
-        source: lang + '.wikipedia.org',
-        wikiLang: lang,
-        wikiTitle: it.title
-      }));
-    } catch(e){ return []; }
-  }
-
-  async function fetchWikiSummary(lang, title){
-    try {
-      const url = 'https://' + lang + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title.replace(/ /g, '_'));
-      const data = await fetchJsonTimeout(url, 3500);
-      if (data && data.extract){
-        return {
-          title: data.title || title,
-          extract: data.extract,
-          thumb: data.thumbnail ? data.thumbnail.source : '',
-          url: (data.content_urls && data.content_urls.desktop) ? data.content_urls.desktop.page : ('https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent(title.replace(/ /g, '_')))
-        };
-      }
-    } catch(e){}
-    return null;
-  }
-
-  async function openQuickRead(lang, title){
-    readerEl.classList.add('open');
-    readerTitle.textContent = title;
-    readerBody.innerHTML = '<p class="hint">Đang tải tóm tắt nhanh...</p>';
-    const sum = await fetchWikiSummary(lang, title);
-    if (sum){
-      const imgHtml = sum.thumb ? '<img src="' + esc(sum.thumb) + '" alt="" style="max-width:140px;border-radius:10px;float:right;margin:0 0 8px 12px">' : '';
-      readerBody.innerHTML = imgHtml + '<p>' + esc(sum.extract) + '</p><p style="margin-top:10px;clear:both"><a href="' + esc(sum.url) + '" target="_blank" rel="noopener noreferrer">Đọc bài đầy đủ ↗</a></p>';
-    } else {
-      readerBody.innerHTML = '<p class="hint">Không tải được tóm tắt. Bạn có thể bấm thẳng vào tiêu đề để mở bài gốc.</p>';
-    }
-  }
-
-  function renderResultsList(items, q){
-    if (!items.length){
-      resultsEl.innerHTML = '<div class="gs-item"><div class="gs-snip">Không tìm thấy kết quả cho "<b>' + esc(q) + '</b>". Hãy thử từ khóa khác.</div></div>';
+  function runGoogleCse(q){
+    if (!savedCx){
+      cseBox.classList.add('open');
+      metaLine.textContent = 'Nhập mã CX của Google Programmable Search Engine rồi bấm Lưu CX.';
       return;
     }
-    resultsEl.innerHTML = items.map((it, idx) => {
-      const domain = it.source || getDomain(it.url);
-      const fav = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(domain) + '&sz=32';
-      const quickBtn = it.wikiLang
-        ? '<button type="button" class="gs-mini-btn" data-qr-lang="' + esc(it.wikiLang) + '" data-qr-title="' + esc(it.wikiTitle) + '">📖 Xem nhanh tại đây</button>'
-        : '';
-      const thumbHtml = it.thumb
-        ? '<img class="gs-item-thumb" loading="lazy" referrerpolicy="no-referrer" src="' + esc(it.thumb) + '" alt="" data-thumb-idx="' + idx + '">'
-        : '';
-      return '<article class="gs-item"><div class="gs-item-row"><div class="gs-item-main">'
-        + '<div class="gs-site"><img class="gs-fav" src="' + esc(fav) + '" alt=""><span class="gs-url">' + esc(domain) + '</span></div>'
-        + '<a class="gs-title" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">' + esc(it.title) + '</a>'
-        + '<div class="gs-snip">' + highlightQuery(it.snippet || it.url, q) + '</div>'
-        + '<div class="gs-item-acts">' + quickBtn
-        + '<a class="gs-mini-btn" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">Mở trang ↗</a></div>'
-        + '</div>' + thumbHtml + '</div></article>';
-    }).join('');
-
-    resultsEl.querySelectorAll('[data-qr-lang]').forEach(btn => {
-      btn.addEventListener('click', () => openQuickRead(btn.dataset.qrLang, btn.dataset.qrTitle));
-    });
-    resultsEl.querySelectorAll('[data-thumb-idx]').forEach(img => {
-      const it = items[Number(img.dataset.thumbIdx)];
-      img.addEventListener('error', () => { img.style.display = 'none'; });
-      img.addEventListener('click', () => { if (it && it.thumb) openLightbox(it.thumb, it.title, it.url); });
-    });
+    frameWrap.classList.remove('open');
+    cseHost.classList.add('open');
+    if (cseLoadedCx !== savedCx){
+      cseHost.innerHTML = '<div class="gcse-searchresults-only" data-gname="ftcse"></div>';
+      const sc = document.createElement('script');
+      sc.async = true;
+      sc.src = 'https://cse.google.com/cse.js?cx=' + encodeURIComponent(savedCx);
+      sc.onload = () => {
+        cseLoadedCx = savedCx;
+        setTimeout(() => {
+          try {
+            if (window.google && google.search && google.search.cse && google.search.cse.element){
+              const el = google.search.cse.element.getElement('ftcse');
+              if (el) el.execute(q);
+            }
+          } catch(e){}
+        }, 400);
+      };
+      document.head.appendChild(sc);
+    } else {
+      try {
+        const el = google.search.cse.element.getElement('ftcse');
+        if (el) el.execute(q);
+      } catch(e){}
+    }
   }
 
-  // ===== RENDER INTO FOCUS MODE BOTTOM-LEFT FLOATING CARD =====
   function renderFocusSearchBody(){
-    const st = lastSearchState;
-    if (st.query) ffInput.value = st.query;
-    let htmlOut = '';
-    if (st.calc){
-      htmlOut += '<div class="gs-ff-item"><div class="gs-ff-site">🧮 Máy tính nhanh</div><div style="font-size:18px;font-weight:900;color:#fff">' + esc(st.calc.expr) + ' = ' + esc(st.calc.value) + '</div></div>';
+    if (lastQuery) ffInput.value = lastQuery;
+    if (!lastUrl){
+      ffBody.classList.remove('frame-mode');
+      ffBody.innerHTML = '<div class="hint" style="font-size:11.5px">Nhập từ khóa ở trên để tìm trực tiếp như trên Google trong Focus Mode, hoặc vuốt sang trái để thu gọn.</div>';
+      return;
     }
-    if (st.mode === 'images' && st.imgs && st.imgs.length){
-      htmlOut += '<div class="gs-ff-imgs">' + st.imgs.slice(0, 8).map((im, i) =>
-        '<img loading="lazy" referrerpolicy="no-referrer" src="' + esc(im.thumb) + '" alt="' + esc(im.title) + '" data-ff-im="' + i + '">'
-      ).join('') + '</div>';
-    } else if (st.items && st.items.length){
-      htmlOut += st.items.slice(0, 6).map(it => {
-        const domain = it.source || getDomain(it.url);
-        const fav = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(domain) + '&sz=32';
-        return '<a class="gs-ff-item" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">'
-          + '<div class="gs-ff-site"><img src="' + esc(fav) + '" alt=""><span>' + esc(domain) + '</span></div>'
-          + '<div class="gs-ff-title">' + esc(it.title) + '</div>'
-          + (it.snippet ? '<div class="gs-ff-snip">' + esc(stripTags(it.snippet)) + '</div>' : '')
-          + '</a>';
-      }).join('');
-    } else if (st.query){
-      htmlOut += '<div class="hint" style="font-size:11.5px">Đang tìm "' + esc(st.query) + '"...</div>';
-    } else {
-      htmlOut += '<div class="hint" style="font-size:11.5px">Nhập từ khóa ở trên để tìm ngay trong Focus Mode, hoặc vuốt sang trái để thu gọn.</div>';
+    ffBody.classList.add('frame-mode');
+    let ifr = ffBody.querySelector('iframe.gs-ff-frame');
+    if (!ifr){
+      ffBody.innerHTML = '';
+      ifr = document.createElement('iframe');
+      ifr.className = 'gs-ff-frame';
+      ifr.title = 'Tìm kiếm trong Focus Mode';
+      ifr.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+      ffBody.appendChild(ifr);
     }
-    ffBody.innerHTML = htmlOut;
-    ffBody.querySelectorAll('[data-ff-im]').forEach(img => {
-      const im = st.imgs[Number(img.dataset.ffIm)];
-      img.addEventListener('error', () => { img.style.display = 'none'; });
-      img.addEventListener('click', () => { if (im) openLightbox(im.full || im.thumb, im.title, im.pageUrl); });
-    });
+    if (ifr.src !== lastUrl) ifr.src = lastUrl;
   }
 
   function tuckFocusSearch(tuck){
@@ -2937,19 +2632,18 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 
   window.onEnterFocusSearch = function(){
     renderFocusSearchBody();
-    // If user already searched something -> show the bottom-left floating card immediately; else show left-edge > tab ready to pull out
-    tuckFocusSearch(!lastSearchState.query);
+    tuckFocusSearch(!lastQuery);
   };
   window.onExitFocusSearch = function(){
     ffEl.classList.remove('open', 'tucked');
     ffTab.classList.remove('open');
   };
 
-  // Tuck button & Swipe-left gesture on #gsFocusFloat (mirror of YouTube PiP)
+  // Swipe-left / Tuck button on Focus Mode Search Card
   ffTuckBtn.addEventListener('click', (e) => { e.stopPropagation(); tuckFocusSearch(true); });
   let ffDrag = null;
   ffEl.addEventListener('pointerdown', (e) => {
-    if (e.target.closest('input') || e.target.closest('button') || e.target.closest('a')) return;
+    if (e.target.closest('input') || e.target.closest('button')) return;
     ffDrag = { id: e.pointerId, startX: e.clientX, startY: e.clientY, dx: 0, active: false };
     try { ffEl.setPointerCapture(e.pointerId); } catch(err){}
   });
@@ -3007,116 +2701,35 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     doSearch(q);
   });
 
-  // ===== MAIN SEARCH ORCHESTRATOR =====
-  async function doSearch(raw){
+  function doSearch(raw){
     const q = (raw || '').trim();
     if (!q) return;
+    lastQuery = q;
     saveRecent(q);
-    readerEl.classList.remove('open');
     instantBox.innerHTML = '';
-    badge.textContent = 'Đang tìm...';
-    badge.classList.add('on');
-    metaLine.textContent = 'Đang tìm kết quả trên nhiều trang web cho "' + q + '"...';
-    resultsEl.innerHTML = '';
 
-    lastSearchState = { query: q, mode: gsMode, calc: null, items: [], imgs: [] };
-    renderFocusSearchBody();
-
-    const t0 = performance.now();
-
-    // IMAGES mode
-    if (gsMode === 'images'){
-      const imgs = await fetchAllImages(q);
-      const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
-      badge.textContent = imgs.length + ' ảnh';
-      badge.classList.remove('on');
-      lastSearchState.imgs = imgs;
-      renderFocusSearchBody();
-      if (imgs.length){
-        metaLine.textContent = 'Tìm thấy ' + imgs.length + ' hình ảnh (' + elapsed + ' giây) cho "' + q + '" • Chạm ảnh để phóng to.';
-        renderImageCards(resultsEl, imgs, false);
-      } else {
-        metaLine.textContent = 'Không tìm thấy hình ảnh phù hợp cho "' + q + '". Thử từ khóa ngắn hơn.';
-      }
-      return;
-    }
-
-    // Instant Calculator
     const calc = tryEvaluateMath(q);
     if (calc){
-      lastSearchState.calc = calc;
       instantBox.innerHTML = '<div class="gs-calc"><div class="gs-calc-expr">' + esc(calc.expr) + ' =</div><div class="gs-calc-val">' + esc(calc.value) + '</div></div>';
     }
 
-    const qClean = cleanImageQuery(q);
-    let mergedRaw = [];
-    let stripImgs = [];
-    let topWiki = null;
-
-    if (gsMode === 'news'){
-      const [newsRes, ddgRes] = await Promise.all([searchNewsRss(q), searchDuckDuckGoWeb(q + ' tin tức')]);
-      mergedRaw = [].concat(newsRes, ddgRes);
-    } else if (gsMode === 'scholar'){
-      const [schRes, ddgRes, wikiVi] = await Promise.all([searchScholarApi(q), searchDuckDuckGoWeb(q), searchWiki(qClean, 'vi')]);
-      mergedRaw = [].concat(schRes, ddgRes, wikiVi.slice(0, 2));
-      topWiki = wikiVi[0];
-    } else if (gsMode === 'study'){
-      const [wikiVi, wikiEn, ddgRes] = await Promise.all([searchWiki(qClean, 'vi'), searchWiki(qClean, 'en'), searchDuckDuckGoWeb(q)]);
-      mergedRaw = [].concat(wikiVi, ddgRes.slice(0, 4), wikiEn.slice(0, 3));
-      topWiki = wikiVi[0] || wikiEn[0];
-    } else {
-      // ALL mode: prioritize real multi-website results (DuckDuckGo Web + SearXNG + News + Reddit) and only keep 1-2 Wiki results
-      const [ddgWeb, searxWeb, newsRes, redditWeb, wikiVi, imgs] = await Promise.all([
-        searchDuckDuckGoWeb(q),
-        searchWebEngines(q),
-        searchNewsRss(q),
-        searchRedditWeb(q),
-        searchWiki(qClean, 'vi'),
-        fetchAllImages(q)
-      ]);
-      stripImgs = imgs || [];
-      topWiki = wikiVi[0];
-      mergedRaw = [].concat(ddgWeb, searxWeb, newsRes.slice(0, 3), redditWeb.slice(0, 2), wikiVi.slice(0, 2));
+    if (gsEngine === 'cse'){
+      badge.textContent = 'Google CSE';
+      metaLine.textContent = 'Kết quả Google CSE cho "' + q + '"';
+      runGoogleCse(q);
+      lastUrl = buildSearchUrl(q, gsMode, 'google');
+      renderFocusSearchBody();
+      return;
     }
 
-    if (stripImgs.length){
-      const stripWrap = document.createElement('div');
-      renderImageCards(stripWrap, stripImgs.slice(0, 10), true);
-      instantBox.appendChild(stripWrap);
-    }
-
-    if (topWiki && gsMode === 'study'){
-      const kp = await fetchWikiSummary(topWiki.wikiLang, topWiki.wikiTitle);
-      if (kp){
-        const kpDiv = document.createElement('div');
-        kpDiv.className = 'gs-kp';
-        kpDiv.innerHTML =
-          (kp.thumb ? '<img src="' + esc(kp.thumb) + '" alt="" style="cursor:pointer">' : '')
-          + '<div><h4>' + esc(kp.title) + '</h4><p>' + esc(kp.extract) + '</p>'
-          + '<div style="margin-top:8px"><a class="gs-mini-btn" href="' + esc(kp.url) + '" target="_blank" rel="noopener noreferrer">Wikipedia ↗</a></div></div>';
-        const kpImg = kpDiv.querySelector('img');
-        if (kpImg) kpImg.addEventListener('click', () => openLightbox(kp.thumb, kp.title, kp.url));
-        instantBox.appendChild(kpDiv);
-      }
-    }
-
-    const seen = new Set();
-    const merged = [];
-    mergedRaw.forEach(item => {
-      if (!item || !item.url || seen.has(item.url)) return;
-      seen.add(item.url);
-      merged.push(item);
-    });
-
-    lastSearchState.items = merged.slice(0, 14);
-    lastSearchState.imgs = stripImgs.slice(0, 8);
+    cseHost.classList.remove('open');
+    const url = buildSearchUrl(q, gsMode, gsEngine);
+    lastUrl = url;
+    frameWrap.classList.add('open');
+    frameEl.src = url;
+    badge.textContent = gsEngine === 'bing' ? 'Bing' : 'Google';
+    metaLine.textContent = 'Đang hiển thị kết quả ' + (gsEngine === 'bing' ? 'Bing' : 'Google') + ' cho "' + q + '" (nếu trắng trang hãy chạm nút Bing dự phòng).';
     renderFocusSearchBody();
-
-    const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
-    badge.textContent = merged.length + ' kết quả';
-    badge.classList.remove('on');
-    metaLine.textContent = 'Tìm thấy ' + merged.length + ' trang web (' + elapsed + ' giây) cho "' + q + '"';
-    renderResultsList(merged.slice(0, 14), q);
   }
 
   form.addEventListener('submit', (e) => {
@@ -3137,6 +2750,24 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       if (input.value.trim()) doSearch(input.value);
     });
   });
+  document.querySelectorAll('#gsEngPills .gs-eng-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#gsEngPills .gs-eng-pill').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      gsEngine = btn.dataset.eng || 'google';
+      cseBox.classList.toggle('open', gsEngine === 'cse');
+      if (input.value.trim()) doSearch(input.value);
+    });
+  });
+  cseSave.addEventListener('click', () => {
+    savedCx = (cseInput.value || '').trim();
+    try { localStorage.setItem('ft_google_cx', savedCx); } catch(e){}
+    if (savedCx){
+      gsEngine = 'cse';
+      metaLine.textContent = 'Đã lưu mã Google CSE! Nhập từ khóa để tìm.';
+      if (input.value.trim()) doSearch(input.value);
+    }
+  });
   document.querySelectorAll('#gsChips .gs-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       input.value = chip.dataset.q || '';
@@ -3149,7 +2780,6 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     try { localStorage.removeItem('ft_search_recent'); } catch(e){}
     renderRecent();
   });
-  readerClose.addEventListener('click', () => readerEl.classList.remove('open'));
 
   renderRecent();
 })();
