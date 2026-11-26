@@ -585,20 +585,20 @@ html,body{overflow-x:hidden;max-width:100%}
 </div>
 </section>
 
-<!-- SEARCH (GOOGLE STYLE) -->
+<!-- SEARCH (GOOGLE STYLE - ZERO WHITE SCREEN) -->
 <section id="tab-search" style="display:none">
 <div class="card">
   <div class="gs-brand">
     <div class="gs-logo" aria-label="Google Search">
       <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
-      <span style="font-size:13px;font-weight:700;color:var(--muted);margin-left:8px">Tìm kiếm trực tiếp</span>
+      <span style="font-size:13px;font-weight:700;color:var(--muted);margin-left:8px">Tìm kiếm nhanh</span>
     </div>
-    <span class="badge" id="gsStatusBadge">Google</span>
+    <span class="badge" id="gsStatusBadge">Sẵn sàng</span>
   </div>
 
   <form id="gsForm" class="gs-bar">
     <span style="font-size:16px;opacity:.75">🔍</span>
-    <input id="gsInput" type="search" autocomplete="off" placeholder="Tìm kiếm trên Google...">
+    <input id="gsInput" type="search" autocomplete="off" placeholder="Tìm kiếm web, hình ảnh, công thức, phép tính...">
     <button type="button" class="gs-clear" id="gsClearBtn" aria-label="Xóa từ khóa">✕</button>
     <button type="submit" class="gs-go" id="gsGoBtn">Tìm</button>
   </form>
@@ -606,21 +606,21 @@ html,body{overflow-x:hidden;max-width:100%}
   <div class="gs-subtabs" id="gsSubtabs">
     <button type="button" class="gs-subtab active" data-mode="all">Tất cả</button>
     <button type="button" class="gs-subtab" data-mode="images">Hình ảnh</button>
-    <button type="button" class="gs-subtab" data-mode="videos">Video</button>
-    <button type="button" class="gs-subtab" data-mode="news">Tin tức</button>
+    <button type="button" class="gs-subtab" data-mode="scholar">Học thuật</button>
+    <button type="button" class="gs-subtab" data-mode="study">Bách khoa</button>
   </div>
 
   <div class="gs-engine-row">
     <div class="gs-eng-pills" id="gsEngPills">
-      <button type="button" class="gs-eng-pill active" data-eng="google">Google</button>
-      <button type="button" class="gs-eng-pill" data-eng="bing">Bing (dự phòng)</button>
-      <button type="button" class="gs-eng-pill" data-eng="cse" id="gsCseToggle">⚙️ Google CSE</button>
+      <button type="button" class="gs-eng-pill active" data-eng="native">Tìm nhanh (Không trắng trang)</button>
+      <button type="button" class="gs-eng-pill" data-eng="cse" id="gsCseToggle">⚙️ Google thật (Mã CX)</button>
     </div>
-    <span class="hint" id="gsMetaLine" style="font-size:12px">Nhập từ khóa để tìm trực tiếp như trên Google.</span>
+    <span class="hint" id="gsMetaLine" style="font-size:12px">Nhập từ khóa để tìm ngay trong app.</span>
   </div>
 
   <div class="gs-cse-box" id="gsCseBox">
-    <input id="gsCseInput" type="text" placeholder="Dán mã CX từ programmablesearchengine.google.com (tùy chọn)">
+    <div class="hint" style="width:100%;font-size:12px">Để hiện <b>100% kết quả Google.com thật</b> ngay trong trang (không bị chặn trắng trang): tạo miễn phí tại <b>programmablesearchengine.google.com</b> (chọn <i>Tìm toàn bộ web</i>) rồi dán mã <b>cx</b> vào đây 1 lần:</div>
+    <input id="gsCseInput" type="text" placeholder="Ví dụ: a1b2c3d4e5f6g7h8i">
     <button type="button" class="btn btn-p" id="gsCseSave" style="padding:8px 14px;font-size:13px">Lưu CX</button>
   </div>
 
@@ -633,13 +633,9 @@ html,body{overflow-x:hidden;max-width:100%}
   </div>
 
   <div id="gsInstantBox"></div>
-
-  <div class="gs-frame-wrap" id="gsFrameWrap">
-    <iframe id="gsFrame" title="Kết quả tìm kiếm" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen"></iframe>
-  </div>
   <div class="gs-cse-host" id="gsCseHost"></div>
 
-  <div id="gsReader" class="gs-reader" style="display:none">
+  <div id="gsReader" class="gs-reader">
     <div class="gs-reader-head">
       <b id="gsReaderTitle">Xem nhanh</b>
       <button type="button" class="gs-mini-btn" id="gsReaderClose">✕ Đóng</button>
@@ -2449,7 +2445,7 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 
 
 <script>
-/* ===== REAL GOOGLE / BING EMBEDDED SEARCH + FOCUS MODE SWIPE-IN FRAME ===== */
+/* ===== FAST NATIVE SEARCH + OFFICIAL GOOGLE CSE (ZERO WHITE SCREEN) + FOCUS MODE SWIPE-IN CARD ===== */
 (function(){
   const form = document.getElementById('gsForm');
   const input = document.getElementById('gsInput');
@@ -2457,8 +2453,7 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   const badge = document.getElementById('gsStatusBadge');
   const instantBox = document.getElementById('gsInstantBox');
   const metaLine = document.getElementById('gsMetaLine');
-  const frameWrap = document.getElementById('gsFrameWrap');
-  const frameEl = document.getElementById('gsFrame');
+  const resultsEl = document.getElementById('gsResults');
   const cseBox = document.getElementById('gsCseBox');
   const cseInput = document.getElementById('gsCseInput');
   const cseSave = document.getElementById('gsCseSave');
@@ -2467,13 +2462,17 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   const recentList = document.getElementById('gsRecentList');
   const clearRecentBtn = document.getElementById('gsClearRecent');
   const readerEl = document.getElementById('gsReader');
+  const readerTitle = document.getElementById('gsReaderTitle');
+  const readerBody = document.getElementById('gsReaderBody');
   const readerClose = document.getElementById('gsReaderClose');
 
   const lbEl = document.getElementById('gsLightbox');
   const lbImg = document.getElementById('gsLbImg');
+  const lbTitle = document.getElementById('gsLbTitle');
+  const lbOpen = document.getElementById('gsLbOpen');
   const lbClose = document.getElementById('gsLbClose');
 
-  // Focus Mode floating search card + left-edge tuck tab
+  // Focus Mode bottom-left floating search card + left-edge tuck tab
   const ffEl = document.getElementById('gsFocusFloat');
   const ffForm = document.getElementById('gsFocusForm');
   const ffInput = document.getElementById('gsFocusInput');
@@ -2481,30 +2480,71 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   const ffTuckBtn = document.getElementById('gsFocusTuckBtn');
   const ffTab = document.getElementById('gsFocusTab');
 
-  let gsMode = 'all';     // all | images | videos | news
-  let gsEngine = 'google'; // google | bing | cse
+  let gsMode = 'all';       // all | images | scholar | study
+  let gsEngine = 'native';  // native | cse
   let gsRecent = [];
   let savedCx = '';
-  let lastQuery = '';
-  let lastUrl = '';
-  let ffTucked = false;
   let cseLoadedCx = '';
+  let lastSearchState = { query: '', mode: 'all', calc: null, items: [], imgs: [] };
+  let ffTucked = false;
 
   try { gsRecent = JSON.parse(localStorage.getItem('ft_search_recent') || '[]'); } catch(e){ gsRecent = []; }
   try { savedCx = localStorage.getItem('ft_google_cx') || ''; } catch(e){ savedCx = ''; }
-  if (savedCx && cseInput) cseInput.value = savedCx;
+  if (savedCx && cseInput){
+    cseInput.value = savedCx;
+    gsEngine = 'cse';
+    document.querySelectorAll('#gsEngPills .gs-eng-pill').forEach(p => p.classList.toggle('active', p.dataset.eng === 'cse'));
+  }
 
   function esc(s){
     return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
+  function stripTags(s){
+    return String(s || '').replace(/<[^>]+>/g, '');
+  }
+  function highlightQuery(text, q){
+    let safe = esc(stripTags(text));
+    const words = (q || '').trim().split(/\s+/).filter(w => w.length >= 2).slice(0, 5);
+    words.forEach(w => {
+      const re = new RegExp('(' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      safe = safe.replace(re, '<mark>$1</mark>');
+    });
+    return safe;
+  }
+  function getDomain(url){
+    try { return new URL(url).hostname.replace(/^www\./, ''); } catch(e){ return 'web'; }
+  }
+  function cleanImageQuery(q){
+    return (q || '').trim()
+      .replace(/^(hình\s*ảnh|hinh\s*anh|ảnh|anh|hình|hinh)\s+/i, '')
+      .trim() || (q || '').trim();
+  }
+  async function fetchJsonTimeout(url, ms){
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), ms || 3200);
+    try {
+      const r = await fetch(url, { signal: ctrl.signal });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return await r.json();
+    } finally {
+      clearTimeout(tid);
+    }
+  }
 
+  function openLightbox(imgUrl, title, pageUrl){
+    if (!lbEl) return;
+    lbImg.src = imgUrl;
+    lbTitle.textContent = title || 'Hình ảnh';
+    lbOpen.href = pageUrl || imgUrl;
+    lbEl.classList.add('open');
+  }
   function closeLightbox(){
     if (lbEl) lbEl.classList.remove('open');
     if (lbImg) lbImg.src = '';
   }
   if (lbClose) lbClose.addEventListener('click', closeLightbox);
   if (lbEl) lbEl.addEventListener('click', (e) => { if (e.target === lbEl) closeLightbox(); });
-  if (readerClose) readerClose.addEventListener('click', () => { if (readerEl) readerEl.style.display = 'none'; });
+  if (readerClose) readerClose.addEventListener('click', () => readerEl.classList.remove('open'));
 
   function tryEvaluateMath(expr){
     const cleaned = (expr || '').trim().replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.');
@@ -2546,32 +2586,229 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     clearBtn.classList.toggle('show', input.value.length > 0);
   }
 
-  function buildSearchUrl(q, mode, eng){
-    const enc = encodeURIComponent(q);
-    if (eng === 'bing'){
-      if (mode === 'images') return 'https://www.bing.com/images/search?q=' + enc + '&setlang=vi';
-      if (mode === 'videos') return 'https://www.bing.com/videos/search?q=' + enc + '&setlang=vi';
-      if (mode === 'news') return 'https://www.bing.com/news/search?q=' + enc + '&setlang=vi';
-      return 'https://www.bing.com/search?q=' + enc + '&setlang=vi';
-    }
-    // Google embeddable search URL (igu=1 renders real Google Search SERP & Images inside iframe)
-    let tbm = '';
-    if (mode === 'images') tbm = '&tbm=isch';
-    else if (mode === 'videos') tbm = '&tbm=vid';
-    else if (mode === 'news') tbm = '&tbm=nws';
-    return 'https://www.google.com/search?igu=1&hl=vi&gl=vn&q=' + enc + tbm;
+  // ===== FAST NATIVE-CORS MULTI-SOURCE SEARCH (ZERO WHITE SCREEN, < 2s) =====
+  async function searchWiki(q, lang){
+    try {
+      const url = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='
+        + encodeURIComponent(q) + '&gsrlimit=6&prop=pageimages|extracts|info&inprop=url&piprop=thumbnail&pithumbsize=240&exintro=1&explaintext=1&exchars=180&format=json&origin=*';
+      const data = await fetchJsonTimeout(url, 3200);
+      const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
+      pages.sort((a,b) => (a.index || 99) - (b.index || 99));
+      return pages.map(it => ({
+        title: it.title,
+        url: it.fullurl || ('https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent((it.title || '').replace(/ /g, '_'))),
+        snippet: stripTags(it.extract || ''),
+        thumb: it.thumbnail ? it.thumbnail.source : '',
+        source: lang + '.wikipedia.org',
+        wikiLang: lang,
+        wikiTitle: it.title
+      }));
+    } catch(e){ return []; }
   }
 
+  async function searchScholarApi(q){
+    try {
+      const data = await fetchJsonTimeout('https://api.openalex.org/works?search=' + encodeURIComponent(q) + '&per-page=8', 3200);
+      const list = (data && Array.isArray(data.results)) ? data.results : [];
+      return list.filter(w => w && w.title).map(w => {
+        const link = w.doi || (w.primary_location && w.primary_location.landing_page_url) || w.id;
+        const authors = (w.authorships || []).slice(0, 3).map(a => a.author && a.author.display_name).filter(Boolean).join(', ');
+        const venue = (w.primary_location && w.primary_location.source && w.primary_location.source.display_name) || '';
+        return {
+          title: w.title,
+          url: link,
+          snippet: [authors, w.publication_year, venue, (w.cited_by_count ? (w.cited_by_count + ' trích dẫn') : '')].filter(Boolean).join(' • '),
+          thumb: '',
+          source: getDomain(link)
+        };
+      });
+    } catch(e){ return []; }
+  }
+
+  async function searchRedditWeb(q){
+    try {
+      const data = await fetchJsonTimeout('https://www.reddit.com/search.json?q=' + encodeURIComponent(q) + '&limit=8&include_over_18=0&sort=relevance', 3200);
+      const children = (data && data.data && Array.isArray(data.data.children)) ? data.data.children : [];
+      return children.filter(ch => ch && ch.data && !ch.data.over_18 && ch.data.title).map(ch => {
+        const d = ch.data;
+        const thumb = (d.thumbnail && d.thumbnail.startsWith('http')) ? d.thumbnail : '';
+        return {
+          title: d.title,
+          url: 'https://www.reddit.com' + (d.permalink || ''),
+          snippet: (d.selftext ? d.selftext.slice(0, 170) : ('r/' + d.subreddit + ' • ' + (d.num_comments || 0) + ' bình luận')),
+          thumb: thumb,
+          source: 'reddit.com/r/' + (d.subreddit || '')
+        };
+      }).slice(0, 5);
+    } catch(e){ return []; }
+  }
+
+  async function searchStackExchange(q){
+    try {
+      const data = await fetchJsonTimeout('https://api.stackexchange.com/2.3/search/advanced?order=desc&sort=relevance&site=stackoverflow&pagesize=5&q=' + encodeURIComponent(q), 3000);
+      const items = (data && Array.isArray(data.items)) ? data.items : [];
+      return items.map(it => ({
+        title: stripTags(it.title),
+        url: it.link,
+        snippet: (it.tags ? ('Chủ đề: ' + it.tags.join(', ')) : '') + ' • ' + (it.answer_count || 0) + ' câu trả lời',
+        thumb: '',
+        source: 'stackoverflow.com'
+      }));
+    } catch(e){ return []; }
+  }
+
+  async function searchOpenverseImages(q){
+    try {
+      const data = await fetchJsonTimeout('https://api.openverse.org/v1/images/?q=' + encodeURIComponent(q) + '&page_size=18', 3500);
+      const list = (data && Array.isArray(data.results)) ? data.results : [];
+      return list.filter(it => it && (it.thumbnail || it.url)).map(it => ({
+        thumb: it.thumbnail || it.url,
+        full: it.url || it.thumbnail,
+        title: it.title || q,
+        source: it.source || getDomain(it.foreign_landing_url || it.url),
+        pageUrl: it.foreign_landing_url || it.url
+      }));
+    } catch(e){ return []; }
+  }
+
+  async function searchRedditImages(q){
+    try {
+      const data = await fetchJsonTimeout('https://www.reddit.com/search.json?q=' + encodeURIComponent(q) + '&limit=22&include_over_18=0&sort=relevance', 3200);
+      const children = (data && data.data && Array.isArray(data.data.children)) ? data.data.children : [];
+      const out = [];
+      children.forEach(ch => {
+        const d = ch && ch.data;
+        if (!d || d.over_18) return;
+        let img = '';
+        if (d.url_overridden_by_dest && /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(d.url_overridden_by_dest)) img = d.url_overridden_by_dest;
+        else if (d.preview && d.preview.images && d.preview.images[0] && d.preview.images[0].source && d.preview.images[0].source.url) img = d.preview.images[0].source.url.replace(/&amp;/g, '&');
+        if (!img || !img.startsWith('http')) return;
+        out.push({ thumb: img, full: img, title: d.title || q, source: 'r/' + (d.subreddit || 'reddit'), pageUrl: 'https://www.reddit.com' + (d.permalink || '') });
+      });
+      return out;
+    } catch(e){ return []; }
+  }
+
+  async function searchCommonsImages(q){
+    try {
+      const url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch='
+        + encodeURIComponent(q) + '&gsrlimit=14&prop=imageinfo&iiprop=url&iiurlwidth=480&format=json&origin=*';
+      const data = await fetchJsonTimeout(url, 3200);
+      const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
+      const out = [];
+      pages.forEach(p => {
+        const info = p && p.imageinfo && p.imageinfo[0];
+        if (!info) return;
+        const thumb = info.thumburl || info.url;
+        if (!thumb || /\.(svg|ogg|ogv|webm|pdf|tif|tiff|djvu)$/i.test(info.url || '')) return;
+        out.push({ thumb, full: info.url || thumb, title: (p.title || '').replace(/^File:/i, '').replace(/\.[^.]+$/, '').replace(/_/g, ' '), source: 'Wikimedia Commons', pageUrl: info.descriptionurl || info.url });
+      });
+      return out;
+    } catch(e){ return []; }
+  }
+
+  async function fetchAllImages(rawQ){
+    const qClean = cleanImageQuery(rawQ);
+    const settled = await Promise.all([
+      searchRedditImages(qClean),
+      searchOpenverseImages(qClean),
+      searchCommonsImages(qClean)
+    ]);
+    const combined = [].concat(settled[0], settled[1], settled[2]);
+    const seen = new Set();
+    const out = [];
+    combined.forEach(it => {
+      if (!it || !it.thumb || seen.has(it.thumb)) return;
+      seen.add(it.thumb);
+      out.push(it);
+    });
+    return out.slice(0, 28);
+  }
+
+  function renderImageCards(container, imgs, isStrip){
+    const cls = isStrip ? 'gs-img-strip' : 'gs-img-grid';
+    container.innerHTML = '<div class="' + cls + '">' + imgs.map((im, idx) =>
+      '<button type="button" class="gs-img-card" data-im-idx="' + idx + '">'
+      + '<div class="gs-img-box"><img loading="lazy" referrerpolicy="no-referrer" src="' + esc(im.thumb) + '" alt="' + esc(im.title) + '"></div>'
+      + '<div class="gs-img-cap">' + esc(im.title) + '</div>'
+      + '<div class="gs-img-src">' + esc(im.source) + '</div>'
+      + '</button>'
+    ).join('') + '</div>';
+    container.querySelectorAll('.gs-img-card').forEach(card => {
+      const im = imgs[Number(card.dataset.imIdx)];
+      const imgTag = card.querySelector('img');
+      if (imgTag) imgTag.addEventListener('error', () => { card.style.display = 'none'; });
+      card.addEventListener('click', () => { if (im) openLightbox(im.full || im.thumb, im.title, im.pageUrl); });
+    });
+  }
+
+  async function fetchWikiSummary(lang, title){
+    try {
+      const data = await fetchJsonTimeout('https://' + lang + '.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title.replace(/ /g, '_')), 3000);
+      if (data && data.extract){
+        return { title: data.title || title, extract: data.extract, thumb: data.thumbnail ? data.thumbnail.source : '', url: (data.content_urls && data.content_urls.desktop) ? data.content_urls.desktop.page : ('https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent(title.replace(/ /g, '_'))) };
+      }
+    } catch(e){}
+    return null;
+  }
+
+  async function openQuickRead(lang, title){
+    readerEl.classList.add('open');
+    readerTitle.textContent = title;
+    readerBody.innerHTML = '<p class="hint">Đang tải tóm tắt nhanh...</p>';
+    const sum = await fetchWikiSummary(lang, title);
+    if (sum){
+      const imgHtml = sum.thumb ? '<img src="' + esc(sum.thumb) + '" alt="" style="max-width:140px;border-radius:10px;float:right;margin:0 0 8px 12px">' : '';
+      readerBody.innerHTML = imgHtml + '<p>' + esc(sum.extract) + '</p><p style="margin-top:10px;clear:both"><a href="' + esc(sum.url) + '" target="_blank" rel="noopener noreferrer">Đọc bài đầy đủ ↗</a></p>';
+    } else {
+      readerBody.innerHTML = '<p class="hint">Không tải được tóm tắt. Bạn có thể bấm thẳng vào tiêu đề để mở bài gốc.</p>';
+    }
+  }
+
+  function renderResultsList(items, q){
+    if (!items.length){
+      resultsEl.innerHTML = '<div class="gs-item"><div class="gs-snip">Chưa có kết quả nhanh cho "<b>' + esc(q) + '</b>". Bạn có thể dán mã <b>Google CSE</b> (miễn phí) ở nút <b>⚙️ Google thật (Mã CX)</b> phía trên để hiện đầy đủ kết quả Google.com ngay trong app.</div></div>';
+      return;
+    }
+    resultsEl.innerHTML = items.map((it, idx) => {
+      const domain = it.source || getDomain(it.url);
+      const fav = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(domain) + '&sz=32';
+      const quickBtn = it.wikiLang
+        ? '<button type="button" class="gs-mini-btn" data-qr-lang="' + esc(it.wikiLang) + '" data-qr-title="' + esc(it.wikiTitle) + '">📖 Xem nhanh tại đây</button>'
+        : '';
+      const thumbHtml = it.thumb
+        ? '<img class="gs-item-thumb" loading="lazy" referrerpolicy="no-referrer" src="' + esc(it.thumb) + '" alt="" data-thumb-idx="' + idx + '">'
+        : '';
+      return '<article class="gs-item"><div class="gs-item-row"><div class="gs-item-main">'
+        + '<div class="gs-site"><img class="gs-fav" src="' + esc(fav) + '" alt=""><span class="gs-url">' + esc(domain) + '</span></div>'
+        + '<a class="gs-title" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">' + esc(it.title) + '</a>'
+        + '<div class="gs-snip">' + highlightQuery(it.snippet || it.url, q) + '</div>'
+        + '<div class="gs-item-acts">' + quickBtn
+        + '<a class="gs-mini-btn" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">Mở trang ↗</a></div>'
+        + '</div>' + thumbHtml + '</div></article>';
+    }).join('');
+
+    resultsEl.querySelectorAll('[data-qr-lang]').forEach(btn => {
+      btn.addEventListener('click', () => openQuickRead(btn.dataset.qrLang, btn.dataset.qrTitle));
+    });
+    resultsEl.querySelectorAll('[data-thumb-idx]').forEach(img => {
+      const it = items[Number(img.dataset.thumbIdx)];
+      img.addEventListener('error', () => { img.style.display = 'none'; });
+      img.addEventListener('click', () => { if (it && it.thumb) openLightbox(it.thumb, it.title, it.url); });
+    });
+  }
+
+  // ===== OFFICIAL GOOGLE CSE (ZERO WHITE SCREEN, REAL GOOGLE.COM RESULTS) =====
   function runGoogleCse(q){
     if (!savedCx){
       cseBox.classList.add('open');
       metaLine.textContent = 'Nhập mã CX của Google Programmable Search Engine rồi bấm Lưu CX.';
       return;
     }
-    frameWrap.classList.remove('open');
+    resultsEl.innerHTML = '';
     cseHost.classList.add('open');
     if (cseLoadedCx !== savedCx){
-      cseHost.innerHTML = '<div class="gcse-searchresults-only" data-gname="ftcse"></div>';
+      cseHost.innerHTML = '<div class="gcse-searchresults-only" data-gname="ftcse" data-linkTarget="_blank"></div>';
       const sc = document.createElement('script');
       sc.async = true;
       sc.src = 'https://cse.google.com/cse.js?cx=' + encodeURIComponent(savedCx);
@@ -2584,7 +2821,7 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
               if (el) el.execute(q);
             }
           } catch(e){}
-        }, 400);
+        }, 450);
       };
       document.head.appendChild(sc);
     } else {
@@ -2595,24 +2832,40 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     }
   }
 
+  // ===== FOCUS MODE BOTTOM-LEFT NATIVE FLOATING SEARCH CARD =====
   function renderFocusSearchBody(){
-    if (lastQuery) ffInput.value = lastQuery;
-    if (!lastUrl){
-      ffBody.classList.remove('frame-mode');
-      ffBody.innerHTML = '<div class="hint" style="font-size:11.5px">Nhập từ khóa ở trên để tìm trực tiếp như trên Google trong Focus Mode, hoặc vuốt sang trái để thu gọn.</div>';
-      return;
+    const st = lastSearchState;
+    if (st.query) ffInput.value = st.query;
+    ffBody.classList.remove('frame-mode');
+    let htmlOut = '';
+    if (st.calc){
+      htmlOut += '<div class="gs-ff-item"><div class="gs-ff-site">🧮 Máy tính nhanh</div><div style="font-size:18px;font-weight:900;color:#fff">' + esc(st.calc.expr) + ' = ' + esc(st.calc.value) + '</div></div>';
     }
-    ffBody.classList.add('frame-mode');
-    let ifr = ffBody.querySelector('iframe.gs-ff-frame');
-    if (!ifr){
-      ffBody.innerHTML = '';
-      ifr = document.createElement('iframe');
-      ifr.className = 'gs-ff-frame';
-      ifr.title = 'Tìm kiếm trong Focus Mode';
-      ifr.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-      ffBody.appendChild(ifr);
+    if (st.mode === 'images' && st.imgs && st.imgs.length){
+      htmlOut += '<div class="gs-ff-imgs">' + st.imgs.slice(0, 8).map((im, i) =>
+        '<img loading="lazy" referrerpolicy="no-referrer" src="' + esc(im.thumb) + '" alt="' + esc(im.title) + '" data-ff-im="' + i + '">'
+      ).join('') + '</div>';
+    } else if (st.items && st.items.length){
+      htmlOut += st.items.slice(0, 6).map(it => {
+        const domain = it.source || getDomain(it.url);
+        const fav = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(domain) + '&sz=32';
+        return '<a class="gs-ff-item" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">'
+          + '<div class="gs-ff-site"><img src="' + esc(fav) + '" alt=""><span>' + esc(domain) + '</span></div>'
+          + '<div class="gs-ff-title">' + esc(it.title) + '</div>'
+          + (it.snippet ? '<div class="gs-ff-snip">' + esc(stripTags(it.snippet)) + '</div>' : '')
+          + '</a>';
+      }).join('');
+    } else if (st.query){
+      htmlOut += '<div class="hint" style="font-size:11.5px">Đang tìm "' + esc(st.query) + '"...</div>';
+    } else {
+      htmlOut += '<div class="hint" style="font-size:11.5px">Nhập từ khóa ở trên để tìm ngay trong Focus Mode, hoặc vuốt sang trái để thu gọn.</div>';
     }
-    if (ifr.src !== lastUrl) ifr.src = lastUrl;
+    ffBody.innerHTML = htmlOut;
+    ffBody.querySelectorAll('[data-ff-im]').forEach(img => {
+      const im = st.imgs[Number(img.dataset.ffIm)];
+      img.addEventListener('error', () => { img.style.display = 'none'; });
+      img.addEventListener('click', () => { if (im) openLightbox(im.full || im.thumb, im.title, im.pageUrl); });
+    });
   }
 
   function tuckFocusSearch(tuck){
@@ -2632,18 +2885,17 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 
   window.onEnterFocusSearch = function(){
     renderFocusSearchBody();
-    tuckFocusSearch(!lastQuery);
+    tuckFocusSearch(!lastSearchState.query);
   };
   window.onExitFocusSearch = function(){
     ffEl.classList.remove('open', 'tucked');
     ffTab.classList.remove('open');
   };
 
-  // Swipe-left / Tuck button on Focus Mode Search Card
   ffTuckBtn.addEventListener('click', (e) => { e.stopPropagation(); tuckFocusSearch(true); });
   let ffDrag = null;
   ffEl.addEventListener('pointerdown', (e) => {
-    if (e.target.closest('input') || e.target.closest('button')) return;
+    if (e.target.closest('input') || e.target.closest('button') || e.target.closest('a')) return;
     ffDrag = { id: e.pointerId, startX: e.clientX, startY: e.clientY, dx: 0, active: false };
     try { ffEl.setPointerCapture(e.pointerId); } catch(err){}
   });
@@ -2671,7 +2923,6 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   ffEl.addEventListener('pointerup', endFfDrag);
   ffEl.addEventListener('pointercancel', endFfDrag);
 
-  // Pull right or tap on left-edge > tab to slide search card back out
   let ffTabDrag = null;
   ffTab.addEventListener('pointerdown', (e) => {
     ffTabDrag = { id: e.pointerId, startX: e.clientX, triggered: false };
@@ -2701,35 +2952,101 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     doSearch(q);
   });
 
-  function doSearch(raw){
+  async function doSearch(raw){
     const q = (raw || '').trim();
     if (!q) return;
-    lastQuery = q;
     saveRecent(q);
+    readerEl.classList.remove('open');
     instantBox.innerHTML = '';
+    lastSearchState = { query: q, mode: gsMode, calc: null, items: [], imgs: [] };
 
     const calc = tryEvaluateMath(q);
     if (calc){
+      lastSearchState.calc = calc;
       instantBox.innerHTML = '<div class="gs-calc"><div class="gs-calc-expr">' + esc(calc.expr) + ' =</div><div class="gs-calc-val">' + esc(calc.value) + '</div></div>';
     }
 
     if (gsEngine === 'cse'){
       badge.textContent = 'Google CSE';
-      metaLine.textContent = 'Kết quả Google CSE cho "' + q + '"';
+      metaLine.textContent = 'Kết quả Google thật cho "' + q + '"';
       runGoogleCse(q);
-      lastUrl = buildSearchUrl(q, gsMode, 'google');
-      renderFocusSearchBody();
+      // Also populate Focus Mode native preview in background
+      searchWiki(cleanImageQuery(q), 'vi').then(w => {
+        lastSearchState.items = w;
+        renderFocusSearchBody();
+      });
       return;
     }
 
     cseHost.classList.remove('open');
-    const url = buildSearchUrl(q, gsMode, gsEngine);
-    lastUrl = url;
-    frameWrap.classList.add('open');
-    frameEl.src = url;
-    badge.textContent = gsEngine === 'bing' ? 'Bing' : 'Google';
-    metaLine.textContent = 'Đang hiển thị kết quả ' + (gsEngine === 'bing' ? 'Bing' : 'Google') + ' cho "' + q + '" (nếu trắng trang hãy chạm nút Bing dự phòng).';
+    badge.textContent = 'Đang tìm...';
+    badge.classList.add('on');
+    metaLine.textContent = 'Đang tìm kết quả cho "' + q + '"...';
+    resultsEl.innerHTML = '';
     renderFocusSearchBody();
+
+    const t0 = performance.now();
+    if (gsMode === 'images'){
+      const imgs = await fetchAllImages(q);
+      const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+      badge.textContent = imgs.length + ' ảnh';
+      badge.classList.remove('on');
+      lastSearchState.imgs = imgs;
+      renderFocusSearchBody();
+      if (imgs.length){
+        metaLine.textContent = 'Tìm thấy ' + imgs.length + ' hình ảnh (' + elapsed + ' giây) • Chạm ảnh để phóng to.';
+        renderImageCards(resultsEl, imgs, false);
+      } else {
+        metaLine.textContent = 'Không tìm thấy ảnh phù hợp cho "' + q + '".';
+      }
+      return;
+    }
+
+    const qClean = cleanImageQuery(q);
+    let mergedRaw = [];
+    let stripImgs = [];
+
+    if (gsMode === 'scholar'){
+      const [sch, wikiVi] = await Promise.all([searchScholarApi(q), searchWiki(qClean, 'vi')]);
+      mergedRaw = [].concat(sch, wikiVi.slice(0, 3));
+    } else if (gsMode === 'study'){
+      const [wikiVi, wikiEn] = await Promise.all([searchWiki(qClean, 'vi'), searchWiki(qClean, 'en')]);
+      mergedRaw = [].concat(wikiVi, wikiEn.slice(0, 4));
+    } else {
+      const [redditRes, schRes, seRes, wikiVi, imgs] = await Promise.all([
+        searchRedditWeb(q),
+        searchScholarApi(q),
+        searchStackExchange(q),
+        searchWiki(qClean, 'vi'),
+        fetchAllImages(q)
+      ]);
+      stripImgs = imgs || [];
+      mergedRaw = [].concat(wikiVi.slice(0, 3), redditRes, schRes.slice(0, 4), seRes.slice(0, 3));
+    }
+
+    if (stripImgs.length){
+      const stripWrap = document.createElement('div');
+      renderImageCards(stripWrap, stripImgs.slice(0, 10), true);
+      instantBox.appendChild(stripWrap);
+    }
+
+    const seen = new Set();
+    const merged = [];
+    mergedRaw.forEach(it => {
+      if (!it || !it.url || seen.has(it.url)) return;
+      seen.add(it.url);
+      merged.push(it);
+    });
+
+    lastSearchState.items = merged.slice(0, 14);
+    lastSearchState.imgs = stripImgs.slice(0, 8);
+    renderFocusSearchBody();
+
+    const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+    badge.textContent = merged.length + ' kết quả';
+    badge.classList.remove('on');
+    metaLine.textContent = 'Tìm thấy ' + merged.length + ' kết quả (' + elapsed + ' giây) cho "' + q + '"';
+    renderResultsList(merged.slice(0, 14), q);
   }
 
   form.addEventListener('submit', (e) => {
@@ -2754,8 +3071,9 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     btn.addEventListener('click', () => {
       document.querySelectorAll('#gsEngPills .gs-eng-pill').forEach(x => x.classList.remove('active'));
       btn.classList.add('active');
-      gsEngine = btn.dataset.eng || 'google';
+      gsEngine = btn.dataset.eng || 'native';
       cseBox.classList.toggle('open', gsEngine === 'cse');
+      if (gsEngine !== 'cse') cseHost.classList.remove('open');
       if (input.value.trim()) doSearch(input.value);
     });
   });
@@ -2764,6 +3082,7 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     try { localStorage.setItem('ft_google_cx', savedCx); } catch(e){}
     if (savedCx){
       gsEngine = 'cse';
+      cseBox.classList.remove('open');
       metaLine.textContent = 'Đã lưu mã Google CSE! Nhập từ khóa để tìm.';
       if (input.value.trim()) doSearch(input.value);
     }
