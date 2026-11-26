@@ -347,6 +347,109 @@ html,body{overflow-x:hidden;max-width:100%}
 .gs-lb-title{font-size:14px;font-weight:800;color:#fff;margin-bottom:8px}
 .gs-lb-acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 
+
+/* === FOCUS MODE LEFT FLOATING SEARCH CARD + SWIPE-IN TAB (MIRROR OF YOUTUBE PiP) === */
+.gs-focus-float{
+  position:fixed;
+  left:max(14px,calc(env(safe-area-inset-left,0px) + 10px));
+  bottom:max(18px,calc(env(safe-area-inset-bottom,0px) + 12px));
+  width:min(265px,36vw);
+  max-height:min(210px,46vh);
+  background:rgba(19,19,44,.88);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:16px;
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 16px 40px rgba(0,0,0,.6);
+  z-index:150;
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+  color:#fff;
+  touch-action:pan-y;
+  transition:transform .28s cubic-bezier(.22,1,.36,1),opacity .22s ease;
+}
+.gs-focus-float.open{display:flex}
+.gs-focus-float.dragging{transition:none}
+.gs-focus-float.tucked{
+  transform:translateX(calc(-100% - 28px))!important;
+  opacity:0;
+  pointer-events:none;
+}
+.gs-ff-head{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 8px;
+  background:rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(255,255,255,.1);
+  flex-shrink:0;
+}
+.gs-ff-form{display:flex;align-items:center;gap:4px;flex:1;min-width:0}
+.gs-ff-input{
+  flex:1;min-width:0;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.14);
+  color:#fff;border-radius:999px;
+  padding:5px 10px;font-size:12px;
+}
+.gs-ff-input::placeholder{color:#b4b4d8}
+.gs-ff-btn{
+  border:0;background:rgba(255,255,255,.14);color:#fff;
+  width:26px;height:26px;border-radius:999px;
+  display:grid;place-items:center;cursor:pointer;font-size:13px;font-weight:900;flex-shrink:0;
+}
+.gs-ff-btn:active{transform:scale(.92)}
+.gs-ff-body{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:8px;display:flex;flex-direction:column;gap:7px;text-align:left;
+}
+.gs-ff-item{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:7px 8px;
+  text-decoration:none;color:#fff;display:block;
+}
+.gs-ff-item:hover{border-color:#8ab4f8}
+.gs-ff-site{font-size:10px;color:#a5a5c8;display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.gs-ff-site img{width:12px;height:12px;border-radius:50%}
+.gs-ff-title{font-size:12px;font-weight:800;color:#8ab4f8;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gs-ff-snip{font-size:11px;color:#d0d0eb;line-height:1.35;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gs-ff-imgs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.gs-ff-imgs img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;cursor:pointer;background:#0e0e22}
+/* Left-edge tucked pill tab (>) matching right-edge YouTube (<) tab */
+.gs-focus-tab{
+  position:fixed;
+  left:0;
+  bottom:max(58px,calc(env(safe-area-inset-bottom,0px) + 52px));
+  width:28px;
+  height:76px;
+  border-radius:0 14px 14px 0;
+  background:rgba(95,105,118,.78);
+  border:1px solid rgba(255,255,255,.22);
+  border-left:0;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  color:#fff;
+  font-size:20px;
+  font-weight:900;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  z-index:155;
+  box-shadow:4px 6px 20px rgba(0,0,0,.45);
+  touch-action:none;
+  user-select:none;
+}
+.gs-focus-tab.open{display:flex}
+.gs-focus-tab:active{background:rgba(66,133,244,.85)}
+@media(max-width:560px){
+  .gs-focus-float{width:min(255px,76vw);max-height:190px}
+}
+@media(max-height:460px){
+  .gs-focus-float{width:min(245px,33vw);max-height:44vh;bottom:14px}
+  .gs-focus-tab{height:68px;bottom:48px}
+}
+
 </style>
 </head>
 <body>
@@ -570,6 +673,22 @@ html,body{overflow-x:hidden;max-width:100%}
 </div>
 <button type="button" class="yt-pip-tab" id="ytPipTab" title="Kéo hoặc chạm để mở lại video" aria-label="Mở lại video YouTube">‹</button>
 
+
+
+<!-- FOCUS MODE FLOATING SEARCH CARD (BOTTOM-LEFT) + SWIPE-IN TAB -->
+<div class="gs-focus-float" id="gsFocusFloat" aria-label="Kết quả tìm kiếm trong Focus Mode">
+  <div class="gs-ff-head">
+    <form class="gs-ff-form" id="gsFocusForm">
+      <input class="gs-ff-input" id="gsFocusInput" type="search" placeholder="🔍 Tìm nhanh...">
+      <button type="submit" class="gs-ff-btn" id="gsFocusGo" title="Tìm">🔍</button>
+    </form>
+    <button type="button" class="gs-ff-btn" id="gsFocusTuckBtn" title="Thu gọn vào mép trái">‹</button>
+  </div>
+  <div class="gs-ff-body" id="gsFocusBody">
+    <div class="hint" style="font-size:11.5px">Nhập từ khóa ở trên để tra cứu ngay trong Focus Mode, hoặc vuốt sang trái để thu gọn.</div>
+  </div>
+</div>
+<button type="button" class="gs-focus-tab" id="gsFocusTab" title="Kéo hoặc chạm để mở khung tìm kiếm" aria-label="Mở khung tìm kiếm">›</button>
 
 <div class="gs-lightbox" id="gsLightbox" aria-label="Xem ảnh lớn">
   <img id="gsLbImg" src="" alt="">
@@ -1503,11 +1622,13 @@ function openFocus(forceSrc){
   syncFocus();
   updateFocusClock();
   if(typeof window.onEnterFocusYT==='function') window.onEnterFocusYT();
+  if(typeof window.onEnterFocusSearch==='function') window.onEnterFocusSearch();
   try{if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}
 }
 function closeFocus(){
   focusLockedSource=null;
   document.getElementById('focusOverlay').classList.remove('open');
+  if(typeof window.onExitFocusSearch==='function') window.onExitFocusSearch();
   try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}
 }
 document.getElementById('focusBtn').onclick=()=>openFocus();
@@ -2281,12 +2402,17 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 
 
 <script>
-/* ===== GOOGLE-STYLE SEARCH TAB (WITH REAL IN-APP IMAGE SEARCH) ===== */
+/* ===== GOOGLE-STYLE SEARCH TAB (MULTI-WEB + IMAGES + FOCUS MODE SWIPE-IN CARD) ===== */
 (function(){
   const SEARX_INSTANCES = [
     'https://searx.be',
     'https://search.sapti.me',
     'https://priv.au'
+  ];
+  const CORS_PROXIES = [
+    u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+    u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
+    u => 'https://corsproxy.io/?url=' + encodeURIComponent(u)
   ];
 
   const form = document.getElementById('gsForm');
@@ -2310,8 +2436,18 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   const lbOpen = document.getElementById('gsLbOpen');
   const lbClose = document.getElementById('gsLbClose');
 
+  // Focus Mode floating search card + left-edge tuck tab
+  const ffEl = document.getElementById('gsFocusFloat');
+  const ffForm = document.getElementById('gsFocusForm');
+  const ffInput = document.getElementById('gsFocusInput');
+  const ffBody = document.getElementById('gsFocusBody');
+  const ffTuckBtn = document.getElementById('gsFocusTuckBtn');
+  const ffTab = document.getElementById('gsFocusTab');
+
   let gsMode = 'all';
   let gsRecent = [];
+  let lastSearchState = { query: '', mode: 'all', calc: null, items: [], imgs: [] };
+  let ffTucked = false;
   try { gsRecent = JSON.parse(localStorage.getItem('ft_search_recent') || '[]'); } catch(e){ gsRecent = []; }
 
   function esc(s){
@@ -2337,16 +2473,30 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       .replace(/^(hình\s*ảnh|hinh\s*anh|ảnh|anh|hình|hinh)\s+/i, '')
       .trim() || (q || '').trim();
   }
-  async function fetchJsonTimeout(url, ms){
+  async function fetchWithTimeout(url, ms){
     const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), ms || 4200);
+    const tid = setTimeout(() => ctrl.abort(), ms || 4500);
     try {
       const r = await fetch(url, { signal: ctrl.signal });
       if (!r.ok) throw new Error('HTTP ' + r.status);
-      return await r.json();
+      return r;
     } finally {
       clearTimeout(tid);
     }
+  }
+  async function fetchJsonTimeout(url, ms){
+    const r = await fetchWithTimeout(url, ms);
+    return await r.json();
+  }
+  async function fetchTextViaProxy(targetUrl, ms){
+    for (let i = 0; i < CORS_PROXIES.length; i++){
+      try {
+        const r = await fetchWithTimeout(CORS_PROXIES[i](targetUrl), ms || 4800);
+        const txt = await r.text();
+        if (txt && txt.length > 200) return txt;
+      } catch(e){}
+    }
+    return '';
   }
 
   function openLightbox(imgUrl, title, pageUrl){
@@ -2362,7 +2512,6 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   lbClose.addEventListener('click', closeLightbox);
   lbEl.addEventListener('click', (e) => { if (e.target === lbEl) closeLightbox(); });
 
-  // Safe instant math evaluator (like Google Calculator)
   function tryEvaluateMath(expr){
     const cleaned = (expr || '').trim().replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '.');
     if (!cleaned || !/^[0-9+\-*/().%\s^]+$/.test(cleaned)) return null;
@@ -2403,11 +2552,140 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     clearBtn.classList.toggle('show', input.value.length > 0);
   }
 
-  // ===== REAL IN-APP IMAGE SEARCH SOURCES (CORS-FRIENDLY) =====
+  // ===== REAL MULTI-WEBSITE SEARCH ENGINES (NOT JUST WIKI!) =====
+  function unwrapDdgHref(href){
+    if (!href) return '';
+    try {
+      if (href.includes('uddg=')){
+        const m = href.match(/uddg=([^&]+)/);
+        if (m) return decodeURIComponent(m[1]);
+      }
+      if (href.startsWith('//')) return 'https:' + href;
+      if (href.startsWith('http')) return href;
+    } catch(e){}
+    return '';
+  }
+
+  // 1. DuckDuckGo HTML (real Vietnamese & global web results: VietJack, Zim, VnExpress, Loigiaihay, etc.)
+  async function searchDuckDuckGoWeb(q){
+    try {
+      const target = 'https://html.duckduckgo.com/html/?q=' + encodeURIComponent(q) + '&kl=vn-vi';
+      const htmlText = await fetchTextViaProxy(target, 5200);
+      if (!htmlText) return [];
+      const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+      const nodes = doc.querySelectorAll('.result, .web-result');
+      const out = [];
+      nodes.forEach(node => {
+        const a = node.querySelector('a.result__a');
+        if (!a) return;
+        const url = unwrapDdgHref(a.getAttribute('href') || '');
+        if (!url || url.includes('duckduckgo.com/y.js')) return;
+        const title = (a.textContent || '').trim();
+        const snipEl = node.querySelector('.result__snippet');
+        const snippet = snipEl ? (snipEl.textContent || '').trim() : '';
+        if (title){
+          out.push({ title, url, snippet, thumb: '', source: getDomain(url) });
+        }
+      });
+      return out.slice(0, 12);
+    } catch(e){ return []; }
+  }
+
+  // 2. Google News RSS (real Vietnamese news & article sites: VnExpress, TuoiTre, DanTri, etc.)
+  async function searchNewsRss(q){
+    try {
+      const target = 'https://news.google.com/rss/search?q=' + encodeURIComponent(q) + '&hl=vi&gl=VN&ceid=VN:vi';
+      const xmlText = await fetchTextViaProxy(target, 4800);
+      if (!xmlText) return [];
+      const doc = new DOMParser().parseFromString(xmlText, 'text/xml');
+      const items = doc.querySelectorAll('item');
+      const out = [];
+      items.forEach(it => {
+        const title = (it.querySelector('title')?.textContent || '').trim();
+        const link = (it.querySelector('link')?.textContent || '').trim();
+        const src = (it.querySelector('source')?.textContent || '').trim();
+        const desc = stripTags(it.querySelector('description')?.textContent || '').trim();
+        const pub = (it.querySelector('pubDate')?.textContent || '').trim();
+        if (title && link){
+          out.push({
+            title,
+            url: link,
+            snippet: desc || (src + (pub ? ' • ' + pub.slice(0, 16) : '')),
+            thumb: '',
+            source: src || 'Tin tức'
+          });
+        }
+      });
+      return out.slice(0, 10);
+    } catch(e){ return []; }
+  }
+
+  // 3. OpenAlex Academic Search (100% native CORS, real papers & articles for Scholar mode)
+  async function searchScholarApi(q){
+    try {
+      const url = 'https://api.openalex.org/works?search=' + encodeURIComponent(q) + '&per-page=10';
+      const data = await fetchJsonTimeout(url, 4500);
+      const list = (data && Array.isArray(data.results)) ? data.results : [];
+      return list.filter(w => w && w.title).map(w => {
+        const link = w.doi || (w.primary_location && w.primary_location.landing_page_url) || w.id;
+        const authors = (w.authorships || []).slice(0, 3).map(a => a.author && a.author.display_name).filter(Boolean).join(', ');
+        const venue = (w.primary_location && w.primary_location.source && w.primary_location.source.display_name) || '';
+        return {
+          title: w.title,
+          url: link,
+          snippet: [authors, w.publication_year, venue, (w.cited_by_count ? (w.cited_by_count + ' trích dẫn') : '')].filter(Boolean).join(' • '),
+          thumb: '',
+          source: getDomain(link)
+        };
+      });
+    } catch(e){ return []; }
+  }
+
+  // 4. Reddit Web Posts (100% native CORS, real discussions & study guides)
+  async function searchRedditWeb(q){
+    try {
+      const data = await fetchJsonTimeout('https://www.reddit.com/search.json?q=' + encodeURIComponent(q) + '&limit=8&include_over_18=0&sort=relevance', 4000);
+      const children = (data && data.data && Array.isArray(data.data.children)) ? data.data.children : [];
+      return children.filter(ch => ch && ch.data && !ch.data.over_18 && ch.data.title).map(ch => {
+        const d = ch.data;
+        const thumb = (d.thumbnail && d.thumbnail.startsWith('http')) ? d.thumbnail : '';
+        return {
+          title: d.title,
+          url: 'https://www.reddit.com' + (d.permalink || ''),
+          snippet: (d.selftext ? d.selftext.slice(0, 170) : ('r/' + d.subreddit + ' • ' + (d.num_comments || 0) + ' bình luận')),
+          thumb: thumb,
+          source: 'reddit.com/r/' + (d.subreddit || '')
+        };
+      }).slice(0, 5);
+    } catch(e){ return []; }
+  }
+
+  // 5. SearXNG backup
+  async function searchWebEngines(q){
+    const enc = encodeURIComponent(q);
+    for (let i = 0; i < SEARX_INSTANCES.length; i++){
+      try {
+        const cat = gsMode === 'news' ? '&categories=news' : '';
+        const data = await fetchJsonTimeout(SEARX_INSTANCES[i] + '/search?q=' + enc + '&format=json&language=vi-VN' + cat, 3200);
+        if (data && Array.isArray(data.results) && data.results.length){
+          return data.results.filter(r => r && r.url && r.title).slice(0, 12).map(r => ({
+            title: r.title,
+            url: r.url,
+            snippet: r.content || '',
+            thumb: r.img_src || r.thumbnail || '',
+            source: getDomain(r.url)
+          }));
+        }
+      } catch(e){}
+    }
+    return [];
+  }
+
+  // 6. Real In-App Image Search Sources
   async function searchOpenverseImages(q){
     try {
       const url = 'https://api.openverse.org/v1/images/?q=' + encodeURIComponent(q) + '&page_size=18';
-      const data = await fetchJsonTimeout(url, 4500);
+      const data = await fetchJsonTimeout(url, 4200);
       const list = (data && Array.isArray(data.results)) ? data.results : [];
       return list.filter(it => it && (it.thumbnail || it.url)).map(it => ({
         thumb: it.thumbnail || it.url,
@@ -2422,8 +2700,8 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   async function searchCommonsImages(q){
     try {
       const url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch='
-        + encodeURIComponent(q) + '&gsrlimit=18&prop=imageinfo&iiprop=url&iiurlwidth=480&format=json&origin=*';
-      const data = await fetchJsonTimeout(url, 4500);
+        + encodeURIComponent(q) + '&gsrlimit=16&prop=imageinfo&iiprop=url&iiurlwidth=480&format=json&origin=*';
+      const data = await fetchJsonTimeout(url, 4200);
       const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
       const out = [];
       pages.forEach(p => {
@@ -2446,7 +2724,7 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   async function searchRedditImages(q){
     try {
       const url = 'https://www.reddit.com/search.json?q=' + encodeURIComponent(q) + '&limit=24&include_over_18=0&sort=relevance';
-      const data = await fetchJsonTimeout(url, 4200);
+      const data = await fetchJsonTimeout(url, 4000);
       const children = (data && data.data && Array.isArray(data.data.children)) ? data.data.children : [];
       const out = [];
       children.forEach(ch => {
@@ -2474,8 +2752,8 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   async function searchWikiPageImages(q, lang){
     try {
       const url = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='
-        + encodeURIComponent(q) + '&gsrlimit=12&prop=pageimages|info&inprop=url&piprop=thumbnail|original&pithumbsize=480&format=json&origin=*';
-      const data = await fetchJsonTimeout(url, 4200);
+        + encodeURIComponent(q) + '&gsrlimit=10&prop=pageimages|info&inprop=url&piprop=thumbnail|original&pithumbsize=480&format=json&origin=*';
+      const data = await fetchJsonTimeout(url, 4000);
       const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
       return pages.filter(p => p && p.thumbnail && p.thumbnail.source).map(p => ({
         thumb: p.thumbnail.source,
@@ -2487,25 +2765,6 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     } catch(e){ return []; }
   }
 
-  async function searchSearxImages(q){
-    const enc = encodeURIComponent(q);
-    for (let i = 0; i < SEARX_INSTANCES.length; i++){
-      try {
-        const data = await fetchJsonTimeout(SEARX_INSTANCES[i] + '/search?q=' + enc + '&categories=images&format=json', 3500);
-        if (data && Array.isArray(data.results) && data.results.length){
-          return data.results.filter(r => r && (r.img_src || r.thumbnail_src)).slice(0, 18).map(r => ({
-            thumb: r.thumbnail_src || r.img_src,
-            full: r.img_src || r.thumbnail_src,
-            title: r.title || q,
-            source: getDomain(r.url || r.img_src),
-            pageUrl: r.url || r.img_src
-          }));
-        }
-      } catch(e){}
-    }
-    return [];
-  }
-
   async function fetchAllImages(rawQ){
     const qClean = cleanImageQuery(rawQ);
     const settled = await Promise.all([
@@ -2513,10 +2772,9 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       searchOpenverseImages(qClean),
       searchCommonsImages(qClean),
       searchWikiPageImages(qClean, 'vi'),
-      searchWikiPageImages(qClean, 'en'),
-      searchSearxImages(rawQ)
+      searchWikiPageImages(qClean, 'en')
     ]);
-    const combined = [].concat(settled[5], settled[0], settled[1], settled[3], settled[4], settled[2]);
+    const combined = [].concat(settled[0], settled[1], settled[2], settled[3], settled[4]);
     const seen = new Set();
     const out = [];
     combined.forEach(it => {
@@ -2541,21 +2799,16 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       const idx = Number(card.dataset.imIdx);
       const im = imgs[idx];
       const imgTag = card.querySelector('img');
-      if (imgTag){
-        imgTag.addEventListener('error', () => { card.style.display = 'none'; });
-      }
-      card.addEventListener('click', () => {
-        if (im) openLightbox(im.full || im.thumb, im.title, im.pageUrl);
-      });
+      if (imgTag) imgTag.addEventListener('error', () => { card.style.display = 'none'; });
+      card.addEventListener('click', () => { if (im) openLightbox(im.full || im.thumb, im.title, im.pageUrl); });
     });
   }
 
-  // ===== WEB & WIKI SEARCH =====
   async function searchWiki(q, lang){
     try {
       const url = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='
-        + encodeURIComponent(q) + '&gsrlimit=8&prop=pageimages|extracts|info&inprop=url&piprop=thumbnail&pithumbsize=240&exintro=1&explaintext=1&exchars=180&format=json&origin=*';
-      const data = await fetchJsonTimeout(url, 4200);
+        + encodeURIComponent(q) + '&gsrlimit=6&prop=pageimages|extracts|info&inprop=url&piprop=thumbnail&pithumbsize=240&exintro=1&explaintext=1&exchars=180&format=json&origin=*';
+      const data = await fetchJsonTimeout(url, 4000);
       const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
       pages.sort((a,b) => (a.index || 99) - (b.index || 99));
       return pages.map(it => ({
@@ -2567,9 +2820,7 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
         wikiLang: lang,
         wikiTitle: it.title
       }));
-    } catch(e){
-      return [];
-    }
+    } catch(e){ return []; }
   }
 
   async function fetchWikiSummary(lang, title){
@@ -2588,48 +2839,6 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     return null;
   }
 
-  async function searchWebEngines(q){
-    const enc = encodeURIComponent(q);
-    for (let i = 0; i < SEARX_INSTANCES.length; i++){
-      try {
-        const cat = gsMode === 'news' ? '&categories=news' : '';
-        const data = await fetchJsonTimeout(SEARX_INSTANCES[i] + '/search?q=' + enc + '&format=json&language=vi-VN' + cat, 3500);
-        if (data && Array.isArray(data.results) && data.results.length){
-          return data.results.filter(r => r && r.url && r.title).slice(0, 12).map(r => ({
-            title: r.title,
-            url: r.url,
-            snippet: r.content || '',
-            thumb: r.img_src || r.thumbnail || '',
-            source: getDomain(r.url)
-          }));
-        }
-      } catch(e){}
-    }
-    return [];
-  }
-
-  async function searchDDG(q){
-    try {
-      const data = await fetchJsonTimeout('https://api.duckduckgo.com/?q=' + encodeURIComponent(q) + '&format=json&no_html=1&skip_disambig=1', 3500);
-      const out = [];
-      if (data && data.AbstractText && data.AbstractURL){
-        out.push({ title: data.Heading || q, url: data.AbstractURL, snippet: data.AbstractText, thumb: data.Image ? (data.Image.startsWith('http') ? data.Image : 'https://duckduckgo.com' + data.Image) : '', source: getDomain(data.AbstractURL) });
-      }
-      if (data && Array.isArray(data.RelatedTopics)){
-        data.RelatedTopics.forEach(t => {
-          if (t && t.FirstURL && t.Text){
-            const parts = t.Text.split(' - ');
-            const ic = (t.Icon && t.Icon.URL) ? (t.Icon.URL.startsWith('http') ? t.Icon.URL : 'https://duckduckgo.com' + t.Icon.URL) : '';
-            out.push({ title: parts[0], url: t.FirstURL, snippet: t.Text, thumb: ic, source: getDomain(t.FirstURL) });
-          }
-        });
-      }
-      return out.slice(0, 6);
-    } catch(e){
-      return [];
-    }
-  }
-
   async function openQuickRead(lang, title){
     readerEl.classList.add('open');
     readerTitle.textContent = title;
@@ -2645,7 +2854,7 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 
   function renderResultsList(items, q){
     if (!items.length){
-      resultsEl.innerHTML = '<div class="gs-item"><div class="gs-snip">Không tìm thấy kết quả cho "<b>' + esc(q) + '</b>". Hãy thử từ khóa ngắn gọn hoặc không dấu hơn.</div></div>';
+      resultsEl.innerHTML = '<div class="gs-item"><div class="gs-snip">Không tìm thấy kết quả cho "<b>' + esc(q) + '</b>". Hãy thử từ khóa khác.</div></div>';
       return;
     }
     resultsEl.innerHTML = items.map((it, idx) => {
@@ -2676,6 +2885,129 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     });
   }
 
+  // ===== RENDER INTO FOCUS MODE BOTTOM-LEFT FLOATING CARD =====
+  function renderFocusSearchBody(){
+    const st = lastSearchState;
+    if (st.query) ffInput.value = st.query;
+    let htmlOut = '';
+    if (st.calc){
+      htmlOut += '<div class="gs-ff-item"><div class="gs-ff-site">🧮 Máy tính nhanh</div><div style="font-size:18px;font-weight:900;color:#fff">' + esc(st.calc.expr) + ' = ' + esc(st.calc.value) + '</div></div>';
+    }
+    if (st.mode === 'images' && st.imgs && st.imgs.length){
+      htmlOut += '<div class="gs-ff-imgs">' + st.imgs.slice(0, 8).map((im, i) =>
+        '<img loading="lazy" referrerpolicy="no-referrer" src="' + esc(im.thumb) + '" alt="' + esc(im.title) + '" data-ff-im="' + i + '">'
+      ).join('') + '</div>';
+    } else if (st.items && st.items.length){
+      htmlOut += st.items.slice(0, 6).map(it => {
+        const domain = it.source || getDomain(it.url);
+        const fav = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(domain) + '&sz=32';
+        return '<a class="gs-ff-item" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">'
+          + '<div class="gs-ff-site"><img src="' + esc(fav) + '" alt=""><span>' + esc(domain) + '</span></div>'
+          + '<div class="gs-ff-title">' + esc(it.title) + '</div>'
+          + (it.snippet ? '<div class="gs-ff-snip">' + esc(stripTags(it.snippet)) + '</div>' : '')
+          + '</a>';
+      }).join('');
+    } else if (st.query){
+      htmlOut += '<div class="hint" style="font-size:11.5px">Đang tìm "' + esc(st.query) + '"...</div>';
+    } else {
+      htmlOut += '<div class="hint" style="font-size:11.5px">Nhập từ khóa ở trên để tìm ngay trong Focus Mode, hoặc vuốt sang trái để thu gọn.</div>';
+    }
+    ffBody.innerHTML = htmlOut;
+    ffBody.querySelectorAll('[data-ff-im]').forEach(img => {
+      const im = st.imgs[Number(img.dataset.ffIm)];
+      img.addEventListener('error', () => { img.style.display = 'none'; });
+      img.addEventListener('click', () => { if (im) openLightbox(im.full || im.thumb, im.title, im.pageUrl); });
+    });
+  }
+
+  function tuckFocusSearch(tuck){
+    const inFocus = document.getElementById('focusOverlay').classList.contains('open');
+    if (!inFocus){
+      ffEl.classList.remove('open', 'tucked');
+      ffTab.classList.remove('open');
+      return;
+    }
+    ffTucked = !!tuck;
+    ffEl.style.left = '';
+    ffEl.style.transform = '';
+    ffEl.classList.add('open');
+    ffEl.classList.toggle('tucked', ffTucked);
+    ffTab.classList.toggle('open', ffTucked);
+  }
+
+  window.onEnterFocusSearch = function(){
+    renderFocusSearchBody();
+    // If user already searched something -> show the bottom-left floating card immediately; else show left-edge > tab ready to pull out
+    tuckFocusSearch(!lastSearchState.query);
+  };
+  window.onExitFocusSearch = function(){
+    ffEl.classList.remove('open', 'tucked');
+    ffTab.classList.remove('open');
+  };
+
+  // Tuck button & Swipe-left gesture on #gsFocusFloat (mirror of YouTube PiP)
+  ffTuckBtn.addEventListener('click', (e) => { e.stopPropagation(); tuckFocusSearch(true); });
+  let ffDrag = null;
+  ffEl.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('input') || e.target.closest('button') || e.target.closest('a')) return;
+    ffDrag = { id: e.pointerId, startX: e.clientX, startY: e.clientY, dx: 0, active: false };
+    try { ffEl.setPointerCapture(e.pointerId); } catch(err){}
+  });
+  ffEl.addEventListener('pointermove', (e) => {
+    if (!ffDrag || e.pointerId !== ffDrag.id) return;
+    const dx = e.clientX - ffDrag.startX;
+    const dy = e.clientY - ffDrag.startY;
+    if (!ffDrag.active && Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)){
+      ffDrag.active = true;
+      ffEl.classList.add('dragging');
+    }
+    if (!ffDrag.active) return;
+    ffDrag.dx = Math.min(20, dx);
+    ffEl.style.transform = 'translateX(' + ffDrag.dx + 'px)';
+  });
+  function endFfDrag(e){
+    if (!ffDrag || e.pointerId !== ffDrag.id) return;
+    const wasActive = ffDrag.active;
+    const dx = ffDrag.dx;
+    ffDrag = null;
+    ffEl.classList.remove('dragging');
+    ffEl.style.transform = '';
+    if (wasActive && dx < -55) tuckFocusSearch(true);
+  }
+  ffEl.addEventListener('pointerup', endFfDrag);
+  ffEl.addEventListener('pointercancel', endFfDrag);
+
+  // Pull right or tap on left-edge > tab to slide search card back out
+  let ffTabDrag = null;
+  ffTab.addEventListener('pointerdown', (e) => {
+    ffTabDrag = { id: e.pointerId, startX: e.clientX, triggered: false };
+    try { ffTab.setPointerCapture(e.pointerId); } catch(err){}
+  });
+  ffTab.addEventListener('pointermove', (e) => {
+    if (!ffTabDrag || e.pointerId !== ffTabDrag.id || ffTabDrag.triggered) return;
+    if (e.clientX - ffTabDrag.startX > 22){
+      ffTabDrag.triggered = true;
+      tuckFocusSearch(false);
+    }
+  });
+  ffTab.addEventListener('pointerup', (e) => {
+    if (!ffTabDrag || e.pointerId !== ffTabDrag.id) return;
+    const trig = ffTabDrag.triggered;
+    ffTabDrag = null;
+    if (!trig) tuckFocusSearch(false);
+  });
+  ffTab.addEventListener('pointercancel', () => { ffTabDrag = null; });
+
+  ffForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = ffInput.value.trim();
+    if (!q) return;
+    input.value = q;
+    updateClearBtn();
+    doSearch(q);
+  });
+
+  // ===== MAIN SEARCH ORCHESTRATOR =====
   async function doSearch(raw){
     const q = (raw || '').trim();
     if (!q) return;
@@ -2684,58 +3016,76 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     instantBox.innerHTML = '';
     badge.textContent = 'Đang tìm...';
     badge.classList.add('on');
-    metaLine.textContent = 'Đang tìm kết quả cho "' + q + '"...';
+    metaLine.textContent = 'Đang tìm kết quả trên nhiều trang web cho "' + q + '"...';
     resultsEl.innerHTML = '';
+
+    lastSearchState = { query: q, mode: gsMode, calc: null, items: [], imgs: [] };
+    renderFocusSearchBody();
 
     const t0 = performance.now();
 
-    // Dedicated IMAGES tab -> real photo grid directly inside app!
+    // IMAGES mode
     if (gsMode === 'images'){
       const imgs = await fetchAllImages(q);
       const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
       badge.textContent = imgs.length + ' ảnh';
       badge.classList.remove('on');
+      lastSearchState.imgs = imgs;
+      renderFocusSearchBody();
       if (imgs.length){
         metaLine.textContent = 'Tìm thấy ' + imgs.length + ' hình ảnh (' + elapsed + ' giây) cho "' + q + '" • Chạm ảnh để phóng to.';
         renderImageCards(resultsEl, imgs, false);
       } else {
-        metaLine.textContent = 'Không tìm thấy hình ảnh phù hợp cho "' + q + '". Thử từ khóa ngắn hơn hoặc tiếng Anh (ví dụ: meme, cat, anime).';
+        metaLine.textContent = 'Không tìm thấy hình ảnh phù hợp cho "' + q + '". Thử từ khóa ngắn hơn.';
       }
       return;
     }
 
-    // Instant Calculator card
+    // Instant Calculator
     const calc = tryEvaluateMath(q);
     if (calc){
+      lastSearchState.calc = calc;
       instantBox.innerHTML = '<div class="gs-calc"><div class="gs-calc-expr">' + esc(calc.expr) + ' =</div><div class="gs-calc-val">' + esc(calc.value) + '</div></div>';
     }
 
     const qClean = cleanImageQuery(q);
-    const tasks = [searchWiki(qClean, 'vi'), searchDDG(qClean)];
-    if (gsMode !== 'study'){
-      tasks.push(searchWebEngines(q));
-      tasks.push(fetchAllImages(q));
+    let mergedRaw = [];
+    let stripImgs = [];
+    let topWiki = null;
+
+    if (gsMode === 'news'){
+      const [newsRes, ddgRes] = await Promise.all([searchNewsRss(q), searchDuckDuckGoWeb(q + ' tin tức')]);
+      mergedRaw = [].concat(newsRes, ddgRes);
+    } else if (gsMode === 'scholar'){
+      const [schRes, ddgRes, wikiVi] = await Promise.all([searchScholarApi(q), searchDuckDuckGoWeb(q), searchWiki(qClean, 'vi')]);
+      mergedRaw = [].concat(schRes, ddgRes, wikiVi.slice(0, 2));
+      topWiki = wikiVi[0];
+    } else if (gsMode === 'study'){
+      const [wikiVi, wikiEn, ddgRes] = await Promise.all([searchWiki(qClean, 'vi'), searchWiki(qClean, 'en'), searchDuckDuckGoWeb(q)]);
+      mergedRaw = [].concat(wikiVi, ddgRes.slice(0, 4), wikiEn.slice(0, 3));
+      topWiki = wikiVi[0] || wikiEn[0];
+    } else {
+      // ALL mode: prioritize real multi-website results (DuckDuckGo Web + SearXNG + News + Reddit) and only keep 1-2 Wiki results
+      const [ddgWeb, searxWeb, newsRes, redditWeb, wikiVi, imgs] = await Promise.all([
+        searchDuckDuckGoWeb(q),
+        searchWebEngines(q),
+        searchNewsRss(q),
+        searchRedditWeb(q),
+        searchWiki(qClean, 'vi'),
+        fetchAllImages(q)
+      ]);
+      stripImgs = imgs || [];
+      topWiki = wikiVi[0];
+      mergedRaw = [].concat(ddgWeb, searxWeb, newsRes.slice(0, 3), redditWeb.slice(0, 2), wikiVi.slice(0, 2));
     }
 
-    const settled = await Promise.all(tasks);
-    const wikiVi = settled[0] || [];
-    const ddgRes = settled[1] || [];
-    const webRes = gsMode !== 'study' ? (settled[2] || []) : [];
-    const stripImgs = gsMode !== 'study' ? (settled[3] || []) : [];
-
-    let wikiEn = [];
-    if (wikiVi.length < 3) wikiEn = await searchWiki(qClean, 'en');
-
-    // Show horizontal Image Strip at top of "Tất cả" results (like Google!)
     if (stripImgs.length){
       const stripWrap = document.createElement('div');
       renderImageCards(stripWrap, stripImgs.slice(0, 10), true);
       instantBox.appendChild(stripWrap);
     }
 
-    // Knowledge Panel from top Wikipedia hit (with image!)
-    const topWiki = wikiVi[0] || wikiEn[0];
-    if (topWiki){
+    if (topWiki && gsMode === 'study'){
       const kp = await fetchWikiSummary(topWiki.wikiLang, topWiki.wikiTitle);
       if (kp){
         const kpDiv = document.createElement('div');
@@ -2750,9 +3100,6 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       }
     }
 
-    const mergedRaw = gsMode === 'study'
-      ? [].concat(wikiVi, wikiEn, ddgRes)
-      : [].concat(webRes, wikiVi, ddgRes, wikiEn);
     const seen = new Set();
     const merged = [];
     mergedRaw.forEach(item => {
@@ -2761,11 +3108,15 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       merged.push(item);
     });
 
+    lastSearchState.items = merged.slice(0, 14);
+    lastSearchState.imgs = stripImgs.slice(0, 8);
+    renderFocusSearchBody();
+
     const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
     badge.textContent = merged.length + ' kết quả';
     badge.classList.remove('on');
-    metaLine.textContent = 'Khoảng ' + merged.length + ' kết quả (' + elapsed + ' giây) cho "' + q + '"';
-    renderResultsList(merged.slice(0, 12), q);
+    metaLine.textContent = 'Tìm thấy ' + merged.length + ' trang web (' + elapsed + ' giây) cho "' + q + '"';
+    renderResultsList(merged.slice(0, 14), q);
   }
 
   form.addEventListener('submit', (e) => {
