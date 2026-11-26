@@ -326,6 +326,27 @@ html,body{overflow-x:hidden;max-width:100%}
   .gs-kp img{width:100%;height:150px}
 }
 
+
+/* === GOOGLE-STYLE IMAGE GRID & LIGHTBOX === */
+.gs-img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:10px;margin-top:12px}
+.gs-img-card{background:var(--card2);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;padding:0;text-align:left;color:var(--text);display:flex;flex-direction:column;transition:transform .15s,border-color .18s}
+.gs-img-card:hover{border-color:#4285f4;transform:translateY(-2px)}
+.gs-img-box{width:100%;aspect-ratio:4/3;background:#0e0e22;overflow:hidden;position:relative}
+.gs-img-box img{width:100%;height:100%;object-fit:cover;display:block}
+.gs-img-cap{padding:7px 9px;font-size:11.5px;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--text)}
+.gs-img-src{padding:0 9px 7px;font-size:10.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs-img-strip{display:flex;gap:8px;overflow-x:auto;padding:4px 0 6px;margin-top:12px;-webkit-overflow-scrolling:touch}
+.gs-img-strip .gs-img-card{flex:0 0 132px}
+.gs-item-row{display:flex;gap:12px;align-items:flex-start}
+.gs-item-main{flex:1;min-width:0}
+.gs-item-thumb{width:76px;height:76px;border-radius:12px;object-fit:cover;flex-shrink:0;background:#101024;cursor:pointer}
+.gs-lightbox{position:fixed;inset:0;z-index:220;background:rgba(5,5,14,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:none;flex-direction:column;align-items:center;justify-content:center;padding:18px}
+.gs-lightbox.open{display:flex}
+.gs-lightbox img{max-width:min(94vw,860px);max-height:70vh;border-radius:14px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.7);background:#000}
+.gs-lb-info{margin-top:12px;max-width:min(92vw,720px);text-align:center}
+.gs-lb-title{font-size:14px;font-weight:800;color:#fff;margin-bottom:8px}
+.gs-lb-acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
 </style>
 </head>
 <body>
@@ -466,7 +487,6 @@ html,body{overflow-x:hidden;max-width:100%}
     <button type="button" class="gs-chip" data-q="(25 * 48) + 120">🧮 Tính nhanh</button>
   </div>
 
-  <div class="gs-ext-bar" id="gsExtBar" style="display:none"></div>
   <div id="gsInstantBox"></div>
   <div id="gsReader" class="gs-reader">
     <div class="gs-reader-head">
@@ -549,6 +569,18 @@ html,body{overflow-x:hidden;max-width:100%}
   </div>
 </div>
 <button type="button" class="yt-pip-tab" id="ytPipTab" title="Kéo hoặc chạm để mở lại video" aria-label="Mở lại video YouTube">‹</button>
+
+
+<div class="gs-lightbox" id="gsLightbox" aria-label="Xem ảnh lớn">
+  <img id="gsLbImg" src="" alt="">
+  <div class="gs-lb-info">
+    <div class="gs-lb-title" id="gsLbTitle"></div>
+    <div class="gs-lb-acts">
+      <a class="btn btn-p" id="gsLbOpen" href="#" target="_blank" rel="noopener noreferrer" style="padding:9px 16px;font-size:13px;text-decoration:none">Mở ảnh gốc ↗</a>
+      <button type="button" class="btn btn-g" id="gsLbClose" style="padding:9px 16px;font-size:13px">✕ Đóng</button>
+    </div>
+  </div>
+</div>
 
 <div class="kbd-bar"><span><kbd>Space</kbd> Bắt đầu/Dừng</span><span><kbd>R</kbd> Đặt lại</span><span><kbd>L</kbd> Lap / Bỏ qua</span><span><kbd>F</kbd> Focus</span><span><kbd>Esc</kbd> Thoát</span></div>
 
@@ -2249,7 +2281,7 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 
 
 <script>
-/* ===== GOOGLE-STYLE SEARCH TAB ===== */
+/* ===== GOOGLE-STYLE SEARCH TAB (WITH REAL IN-APP IMAGE SEARCH) ===== */
 (function(){
   const SEARX_INSTANCES = [
     'https://searx.be',
@@ -2261,7 +2293,6 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   const input = document.getElementById('gsInput');
   const clearBtn = document.getElementById('gsClearBtn');
   const badge = document.getElementById('gsStatusBadge');
-  const extBar = document.getElementById('gsExtBar');
   const instantBox = document.getElementById('gsInstantBox');
   const metaLine = document.getElementById('gsMetaLine');
   const resultsEl = document.getElementById('gsResults');
@@ -2272,6 +2303,12 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   const readerTitle = document.getElementById('gsReaderTitle');
   const readerBody = document.getElementById('gsReaderBody');
   const readerClose = document.getElementById('gsReaderClose');
+
+  const lbEl = document.getElementById('gsLightbox');
+  const lbImg = document.getElementById('gsLbImg');
+  const lbTitle = document.getElementById('gsLbTitle');
+  const lbOpen = document.getElementById('gsLbOpen');
+  const lbClose = document.getElementById('gsLbClose');
 
   let gsMode = 'all';
   let gsRecent = [];
@@ -2295,9 +2332,14 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
   function getDomain(url){
     try { return new URL(url).hostname.replace(/^www\./, ''); } catch(e){ return 'web'; }
   }
+  function cleanImageQuery(q){
+    return (q || '').trim()
+      .replace(/^(hình\s*ảnh|hinh\s*anh|ảnh|anh|hình|hinh)\s+/i, '')
+      .trim() || (q || '').trim();
+  }
   async function fetchJsonTimeout(url, ms){
     const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), ms || 3800);
+    const tid = setTimeout(() => ctrl.abort(), ms || 4200);
     try {
       const r = await fetch(url, { signal: ctrl.signal });
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -2306,6 +2348,19 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       clearTimeout(tid);
     }
   }
+
+  function openLightbox(imgUrl, title, pageUrl){
+    lbImg.src = imgUrl;
+    lbTitle.textContent = title || 'Hình ảnh';
+    lbOpen.href = pageUrl || imgUrl;
+    lbEl.classList.add('open');
+  }
+  function closeLightbox(){
+    lbEl.classList.remove('open');
+    lbImg.src = '';
+  }
+  lbClose.addEventListener('click', closeLightbox);
+  lbEl.addEventListener('click', (e) => { if (e.target === lbEl) closeLightbox(); });
 
   // Safe instant math evaluator (like Google Calculator)
   function tryEvaluateMath(expr){
@@ -2348,25 +2403,166 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     clearBtn.classList.toggle('show', input.value.length > 0);
   }
 
-  function renderExternalBar(q){
-    const enc = encodeURIComponent(q);
-    extBar.style.display = 'flex';
-    extBar.innerHTML =
-      '<a class="gs-ext-link" href="https://www.google.com/search?q=' + enc + '" target="_blank" rel="noopener noreferrer">🌐 Mở trên Google ↗</a>'
-      + '<a class="gs-ext-link" href="https://www.google.com/search?tbm=isch&q=' + enc + '" target="_blank" rel="noopener noreferrer">🖼️ Google Hình ảnh ↗</a>'
-      + '<a class="gs-ext-link" href="https://www.google.com/search?tbm=nws&q=' + enc + '" target="_blank" rel="noopener noreferrer">📰 Tin tức ↗</a>'
-      + '<a class="gs-ext-link" href="https://scholar.google.com/scholar?q=' + enc + '" target="_blank" rel="noopener noreferrer">🎓 Google Scholar ↗</a>';
+  // ===== REAL IN-APP IMAGE SEARCH SOURCES (CORS-FRIENDLY) =====
+  async function searchOpenverseImages(q){
+    try {
+      const url = 'https://api.openverse.org/v1/images/?q=' + encodeURIComponent(q) + '&page_size=18';
+      const data = await fetchJsonTimeout(url, 4500);
+      const list = (data && Array.isArray(data.results)) ? data.results : [];
+      return list.filter(it => it && (it.thumbnail || it.url)).map(it => ({
+        thumb: it.thumbnail || it.url,
+        full: it.url || it.thumbnail,
+        title: it.title || q,
+        source: it.source || getDomain(it.foreign_landing_url || it.url),
+        pageUrl: it.foreign_landing_url || it.url
+      }));
+    } catch(e){ return []; }
   }
 
+  async function searchCommonsImages(q){
+    try {
+      const url = 'https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrsearch='
+        + encodeURIComponent(q) + '&gsrlimit=18&prop=imageinfo&iiprop=url&iiurlwidth=480&format=json&origin=*';
+      const data = await fetchJsonTimeout(url, 4500);
+      const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
+      const out = [];
+      pages.forEach(p => {
+        const info = p && p.imageinfo && p.imageinfo[0];
+        if (!info) return;
+        const thumb = info.thumburl || info.url;
+        if (!thumb || /\.(svg|ogg|ogv|webm|pdf|tif|tiff|djvu)$/i.test(info.url || '')) return;
+        out.push({
+          thumb: thumb,
+          full: info.url || thumb,
+          title: (p.title || '').replace(/^File:/i, '').replace(/\.[^.]+$/, '').replace(/_/g, ' '),
+          source: 'Wikimedia Commons',
+          pageUrl: info.descriptionurl || info.url
+        });
+      });
+      return out;
+    } catch(e){ return []; }
+  }
+
+  async function searchRedditImages(q){
+    try {
+      const url = 'https://www.reddit.com/search.json?q=' + encodeURIComponent(q) + '&limit=24&include_over_18=0&sort=relevance';
+      const data = await fetchJsonTimeout(url, 4200);
+      const children = (data && data.data && Array.isArray(data.data.children)) ? data.data.children : [];
+      const out = [];
+      children.forEach(ch => {
+        const d = ch && ch.data;
+        if (!d || d.over_18) return;
+        let img = '';
+        if (d.url_overridden_by_dest && /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(d.url_overridden_by_dest)){
+          img = d.url_overridden_by_dest;
+        } else if (d.preview && d.preview.images && d.preview.images[0] && d.preview.images[0].source && d.preview.images[0].source.url){
+          img = d.preview.images[0].source.url.replace(/&amp;/g, '&');
+        }
+        if (!img || !img.startsWith('http')) return;
+        out.push({
+          thumb: img,
+          full: img,
+          title: d.title || q,
+          source: 'r/' + (d.subreddit || 'reddit'),
+          pageUrl: 'https://www.reddit.com' + (d.permalink || '')
+        });
+      });
+      return out;
+    } catch(e){ return []; }
+  }
+
+  async function searchWikiPageImages(q, lang){
+    try {
+      const url = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='
+        + encodeURIComponent(q) + '&gsrlimit=12&prop=pageimages|info&inprop=url&piprop=thumbnail|original&pithumbsize=480&format=json&origin=*';
+      const data = await fetchJsonTimeout(url, 4200);
+      const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
+      return pages.filter(p => p && p.thumbnail && p.thumbnail.source).map(p => ({
+        thumb: p.thumbnail.source,
+        full: (p.original && p.original.source) ? p.original.source : p.thumbnail.source,
+        title: p.title || q,
+        source: lang + '.wikipedia.org',
+        pageUrl: p.fullurl || ('https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent((p.title || '').replace(/ /g, '_')))
+      }));
+    } catch(e){ return []; }
+  }
+
+  async function searchSearxImages(q){
+    const enc = encodeURIComponent(q);
+    for (let i = 0; i < SEARX_INSTANCES.length; i++){
+      try {
+        const data = await fetchJsonTimeout(SEARX_INSTANCES[i] + '/search?q=' + enc + '&categories=images&format=json', 3500);
+        if (data && Array.isArray(data.results) && data.results.length){
+          return data.results.filter(r => r && (r.img_src || r.thumbnail_src)).slice(0, 18).map(r => ({
+            thumb: r.thumbnail_src || r.img_src,
+            full: r.img_src || r.thumbnail_src,
+            title: r.title || q,
+            source: getDomain(r.url || r.img_src),
+            pageUrl: r.url || r.img_src
+          }));
+        }
+      } catch(e){}
+    }
+    return [];
+  }
+
+  async function fetchAllImages(rawQ){
+    const qClean = cleanImageQuery(rawQ);
+    const settled = await Promise.all([
+      searchRedditImages(qClean),
+      searchOpenverseImages(qClean),
+      searchCommonsImages(qClean),
+      searchWikiPageImages(qClean, 'vi'),
+      searchWikiPageImages(qClean, 'en'),
+      searchSearxImages(rawQ)
+    ]);
+    const combined = [].concat(settled[5], settled[0], settled[1], settled[3], settled[4], settled[2]);
+    const seen = new Set();
+    const out = [];
+    combined.forEach(it => {
+      if (!it || !it.thumb || seen.has(it.thumb)) return;
+      seen.add(it.thumb);
+      out.push(it);
+    });
+    return out.slice(0, 30);
+  }
+
+  function renderImageCards(container, imgs, isStrip){
+    const cls = isStrip ? 'gs-img-strip' : 'gs-img-grid';
+    container.innerHTML = '<div class="' + cls + '">' + imgs.map((im, idx) =>
+      '<button type="button" class="gs-img-card" data-im-idx="' + idx + '">'
+      + '<div class="gs-img-box"><img loading="lazy" referrerpolicy="no-referrer" src="' + esc(im.thumb) + '" alt="' + esc(im.title) + '"></div>'
+      + '<div class="gs-img-cap">' + esc(im.title) + '</div>'
+      + '<div class="gs-img-src">' + esc(im.source) + '</div>'
+      + '</button>'
+    ).join('') + '</div>';
+
+    container.querySelectorAll('.gs-img-card').forEach(card => {
+      const idx = Number(card.dataset.imIdx);
+      const im = imgs[idx];
+      const imgTag = card.querySelector('img');
+      if (imgTag){
+        imgTag.addEventListener('error', () => { card.style.display = 'none'; });
+      }
+      card.addEventListener('click', () => {
+        if (im) openLightbox(im.full || im.thumb, im.title, im.pageUrl);
+      });
+    });
+  }
+
+  // ===== WEB & WIKI SEARCH =====
   async function searchWiki(q, lang){
     try {
-      const url = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&list=search&srlimit=8&utf8=1&format=json&origin=*&srsearch=' + encodeURIComponent(q);
-      const data = await fetchJsonTimeout(url, 4000);
-      const list = (data && data.query && data.query.search) ? data.query.search : [];
-      return list.map(it => ({
+      const url = 'https://' + lang + '.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch='
+        + encodeURIComponent(q) + '&gsrlimit=8&prop=pageimages|extracts|info&inprop=url&piprop=thumbnail&pithumbsize=240&exintro=1&explaintext=1&exchars=180&format=json&origin=*';
+      const data = await fetchJsonTimeout(url, 4200);
+      const pages = (data && data.query && data.query.pages) ? Object.values(data.query.pages) : [];
+      pages.sort((a,b) => (a.index || 99) - (b.index || 99));
+      return pages.map(it => ({
         title: it.title,
-        url: 'https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent(it.title.replace(/ /g, '_')),
-        snippet: stripTags(it.snippet || ''),
+        url: it.fullurl || ('https://' + lang + '.wikipedia.org/wiki/' + encodeURIComponent((it.title || '').replace(/ /g, '_'))),
+        snippet: stripTags(it.extract || ''),
+        thumb: it.thumbnail ? it.thumbnail.source : '',
         source: lang + '.wikipedia.org',
         wikiLang: lang,
         wikiTitle: it.title
@@ -2396,13 +2592,14 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     const enc = encodeURIComponent(q);
     for (let i = 0; i < SEARX_INSTANCES.length; i++){
       try {
-        const cat = gsMode === 'news' ? '&categories=news' : (gsMode === 'images' ? '&categories=images' : '');
+        const cat = gsMode === 'news' ? '&categories=news' : '';
         const data = await fetchJsonTimeout(SEARX_INSTANCES[i] + '/search?q=' + enc + '&format=json&language=vi-VN' + cat, 3500);
         if (data && Array.isArray(data.results) && data.results.length){
           return data.results.filter(r => r && r.url && r.title).slice(0, 12).map(r => ({
             title: r.title,
             url: r.url,
             snippet: r.content || '',
+            thumb: r.img_src || r.thumbnail || '',
             source: getDomain(r.url)
           }));
         }
@@ -2416,13 +2613,14 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       const data = await fetchJsonTimeout('https://api.duckduckgo.com/?q=' + encodeURIComponent(q) + '&format=json&no_html=1&skip_disambig=1', 3500);
       const out = [];
       if (data && data.AbstractText && data.AbstractURL){
-        out.push({ title: data.Heading || q, url: data.AbstractURL, snippet: data.AbstractText, source: getDomain(data.AbstractURL) });
+        out.push({ title: data.Heading || q, url: data.AbstractURL, snippet: data.AbstractText, thumb: data.Image ? (data.Image.startsWith('http') ? data.Image : 'https://duckduckgo.com' + data.Image) : '', source: getDomain(data.AbstractURL) });
       }
       if (data && Array.isArray(data.RelatedTopics)){
         data.RelatedTopics.forEach(t => {
           if (t && t.FirstURL && t.Text){
             const parts = t.Text.split(' - ');
-            out.push({ title: parts[0], url: t.FirstURL, snippet: t.Text, source: getDomain(t.FirstURL) });
+            const ic = (t.Icon && t.Icon.URL) ? (t.Icon.URL.startsWith('http') ? t.Icon.URL : 'https://duckduckgo.com' + t.Icon.URL) : '';
+            out.push({ title: parts[0], url: t.FirstURL, snippet: t.Text, thumb: ic, source: getDomain(t.FirstURL) });
           }
         });
       }
@@ -2438,7 +2636,8 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     readerBody.innerHTML = '<p class="hint">Đang tải tóm tắt nhanh...</p>';
     const sum = await fetchWikiSummary(lang, title);
     if (sum){
-      readerBody.innerHTML = '<p>' + esc(sum.extract) + '</p><p style="margin-top:10px"><a href="' + esc(sum.url) + '" target="_blank" rel="noopener noreferrer">Đọc bài đầy đủ ↗</a></p>';
+      const imgHtml = sum.thumb ? '<img src="' + esc(sum.thumb) + '" alt="" style="max-width:140px;border-radius:10px;float:right;margin:0 0 8px 12px">' : '';
+      readerBody.innerHTML = imgHtml + '<p>' + esc(sum.extract) + '</p><p style="margin-top:10px;clear:both"><a href="' + esc(sum.url) + '" target="_blank" rel="noopener noreferrer">Đọc bài đầy đủ ↗</a></p>';
     } else {
       readerBody.innerHTML = '<p class="hint">Không tải được tóm tắt. Bạn có thể bấm thẳng vào tiêu đề để mở bài gốc.</p>';
     }
@@ -2446,7 +2645,7 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
 
   function renderResultsList(items, q){
     if (!items.length){
-      resultsEl.innerHTML = '<div class="gs-item"><div class="gs-snip">Không tải được kết quả trực tiếp cho "<b>' + esc(q) + '</b>". Bạn bấm nút <b>🌐 Mở trên Google ↗</b> ở trên để xem ngay trên Google.</div></div>';
+      resultsEl.innerHTML = '<div class="gs-item"><div class="gs-snip">Không tìm thấy kết quả cho "<b>' + esc(q) + '</b>". Hãy thử từ khóa ngắn gọn hoặc không dấu hơn.</div></div>';
       return;
     }
     resultsEl.innerHTML = items.map((it, idx) => {
@@ -2455,17 +2654,25 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
       const quickBtn = it.wikiLang
         ? '<button type="button" class="gs-mini-btn" data-qr-lang="' + esc(it.wikiLang) + '" data-qr-title="' + esc(it.wikiTitle) + '">📖 Xem nhanh tại đây</button>'
         : '';
-      return '<article class="gs-item">'
+      const thumbHtml = it.thumb
+        ? '<img class="gs-item-thumb" loading="lazy" referrerpolicy="no-referrer" src="' + esc(it.thumb) + '" alt="" data-thumb-idx="' + idx + '">'
+        : '';
+      return '<article class="gs-item"><div class="gs-item-row"><div class="gs-item-main">'
         + '<div class="gs-site"><img class="gs-fav" src="' + esc(fav) + '" alt=""><span class="gs-url">' + esc(domain) + '</span></div>'
         + '<a class="gs-title" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">' + esc(it.title) + '</a>'
         + '<div class="gs-snip">' + highlightQuery(it.snippet || it.url, q) + '</div>'
         + '<div class="gs-item-acts">' + quickBtn
         + '<a class="gs-mini-btn" href="' + esc(it.url) + '" target="_blank" rel="noopener noreferrer">Mở trang ↗</a></div>'
-        + '</article>';
+        + '</div>' + thumbHtml + '</div></article>';
     }).join('');
 
     resultsEl.querySelectorAll('[data-qr-lang]').forEach(btn => {
       btn.addEventListener('click', () => openQuickRead(btn.dataset.qrLang, btn.dataset.qrTitle));
+    });
+    resultsEl.querySelectorAll('[data-thumb-idx]').forEach(img => {
+      const it = items[Number(img.dataset.thumbIdx)];
+      img.addEventListener('error', () => { img.style.display = 'none'; });
+      img.addEventListener('click', () => { if (it && it.thumb) openLightbox(it.thumb, it.title, it.url); });
     });
   }
 
@@ -2474,47 +2681,75 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     if (!q) return;
     saveRecent(q);
     readerEl.classList.remove('open');
-    renderExternalBar(q);
     instantBox.innerHTML = '';
     badge.textContent = 'Đang tìm...';
     badge.classList.add('on');
     metaLine.textContent = 'Đang tìm kết quả cho "' + q + '"...';
     resultsEl.innerHTML = '';
 
-    // 1. Instant Calculator card (like Google)
+    const t0 = performance.now();
+
+    // Dedicated IMAGES tab -> real photo grid directly inside app!
+    if (gsMode === 'images'){
+      const imgs = await fetchAllImages(q);
+      const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+      badge.textContent = imgs.length + ' ảnh';
+      badge.classList.remove('on');
+      if (imgs.length){
+        metaLine.textContent = 'Tìm thấy ' + imgs.length + ' hình ảnh (' + elapsed + ' giây) cho "' + q + '" • Chạm ảnh để phóng to.';
+        renderImageCards(resultsEl, imgs, false);
+      } else {
+        metaLine.textContent = 'Không tìm thấy hình ảnh phù hợp cho "' + q + '". Thử từ khóa ngắn hơn hoặc tiếng Anh (ví dụ: meme, cat, anime).';
+      }
+      return;
+    }
+
+    // Instant Calculator card
     const calc = tryEvaluateMath(q);
     if (calc){
       instantBox.innerHTML = '<div class="gs-calc"><div class="gs-calc-expr">' + esc(calc.expr) + ' =</div><div class="gs-calc-val">' + esc(calc.value) + '</div></div>';
     }
 
-    // 2. If user explicitly picked Images / News / Scholar, still fetch relevant summaries + offer 1-tap Google tab
-    const t0 = performance.now();
-    const tasks = [searchWiki(q, 'vi')];
-    if (gsMode !== 'study') tasks.push(searchWebEngines(q));
-    tasks.push(searchDDG(q));
+    const qClean = cleanImageQuery(q);
+    const tasks = [searchWiki(qClean, 'vi'), searchDDG(qClean)];
+    if (gsMode !== 'study'){
+      tasks.push(searchWebEngines(q));
+      tasks.push(fetchAllImages(q));
+    }
 
     const settled = await Promise.all(tasks);
     const wikiVi = settled[0] || [];
-    const webRes = gsMode !== 'study' ? (settled[1] || []) : [];
-    const ddgRes = gsMode !== 'study' ? (settled[2] || []) : (settled[1] || []);
+    const ddgRes = settled[1] || [];
+    const webRes = gsMode !== 'study' ? (settled[2] || []) : [];
+    const stripImgs = gsMode !== 'study' ? (settled[3] || []) : [];
 
     let wikiEn = [];
-    if (wikiVi.length < 3) wikiEn = await searchWiki(q, 'en');
+    if (wikiVi.length < 3) wikiEn = await searchWiki(qClean, 'en');
 
-    // Knowledge Panel from top Wikipedia hit
+    // Show horizontal Image Strip at top of "Tất cả" results (like Google!)
+    if (stripImgs.length){
+      const stripWrap = document.createElement('div');
+      renderImageCards(stripWrap, stripImgs.slice(0, 10), true);
+      instantBox.appendChild(stripWrap);
+    }
+
+    // Knowledge Panel from top Wikipedia hit (with image!)
     const topWiki = wikiVi[0] || wikiEn[0];
     if (topWiki){
       const kp = await fetchWikiSummary(topWiki.wikiLang, topWiki.wikiTitle);
       if (kp){
-        const kpHtml = '<div class="gs-kp">'
-          + (kp.thumb ? '<img src="' + esc(kp.thumb) + '" alt="">' : '')
+        const kpDiv = document.createElement('div');
+        kpDiv.className = 'gs-kp';
+        kpDiv.innerHTML =
+          (kp.thumb ? '<img src="' + esc(kp.thumb) + '" alt="" style="cursor:pointer">' : '')
           + '<div><h4>' + esc(kp.title) + '</h4><p>' + esc(kp.extract) + '</p>'
-          + '<div style="margin-top:8px"><a class="gs-mini-btn" href="' + esc(kp.url) + '" target="_blank" rel="noopener noreferrer">Wikipedia ↗</a></div></div></div>';
-        instantBox.innerHTML += kpHtml;
+          + '<div style="margin-top:8px"><a class="gs-mini-btn" href="' + esc(kp.url) + '" target="_blank" rel="noopener noreferrer">Wikipedia ↗</a></div></div>';
+        const kpImg = kpDiv.querySelector('img');
+        if (kpImg) kpImg.addEventListener('click', () => openLightbox(kp.thumb, kp.title, kp.url));
+        instantBox.appendChild(kpDiv);
       }
     }
 
-    // Merge & deduplicate results (Web first if All/News, Wiki first if Study)
     const mergedRaw = gsMode === 'study'
       ? [].concat(wikiVi, wikiEn, ddgRes)
       : [].concat(webRes, wikiVi, ddgRes, wikiEn);
@@ -2527,9 +2762,9 @@ renderCount();renderStop();renderPkgs();selectPkg('lythuyet');renderSuggest();
     });
 
     const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
-    badge.textContent = merged.length ? (merged.length + ' kết quả') : 'Mở Google';
+    badge.textContent = merged.length + ' kết quả';
     badge.classList.remove('on');
-    metaLine.textContent = 'Khoảng ' + merged.length + ' kết quả trực tiếp (' + elapsed + ' giây) cho "' + q + '"';
+    metaLine.textContent = 'Khoảng ' + merged.length + ' kết quả (' + elapsed + ' giây) cho "' + q + '"';
     renderResultsList(merged.slice(0, 12), q);
   }
 
